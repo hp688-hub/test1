@@ -845,6 +845,71 @@ class GameAudio {
   }
 
   // INSERT_SFX_HERE
+  playLevelUpStinger() {
+    const b = this.begin();
+    if (!b) return;
+    const v = this.vary();
+    const notes = [261.63, 329.63, 392.00, 523.25, 659.25, 783.99, 1046.50];
+    notes.forEach((freq, i) => {
+      this.blip(b, b.now + i * 0.07, { type: 'sine', freq: freq * v, dur: 0.25, gain: 0.06 });
+    });
+    const tailTime = notes.length * 0.07;
+    this.noiseBurst(b, b.now + tailTime, { dur: 0.8, gain: 0.05, from: 3000, to: 6000 });
+    for (let i = 0; i < 5; i++) {
+      this.blip(b, b.now + tailTime + i * 0.1, {
+        type: 'sine',
+        freq: (2000 + i * 500) * this.vary(0.1),
+        dur: 0.2,
+        gain: 0.03
+      });
+    }
+  }
+
+  playDefeatMotif() {
+    const b = this.begin();
+    if (!b) return;
+    const v = this.vary();
+    const notes = [311.13, 261.63, 246.94, 196.00];
+    notes.forEach((freq, i) => {
+      this.blip(b, b.now + i * 0.15, { type: 'sawtooth', freq: freq * v, dur: 0.3, gain: 0.08 });
+      this.blip(b, b.now + i * 0.15, { type: 'sine', freq: freq * 0.5 * v, dur: 0.35, gain: 0.06 });
+    });
+  }
+
+  playMeleePunch() {
+    const b = this.begin();
+    if (!b) return;
+    const v = this.vary();
+    this.blip(b, b.now, { type: 'triangle', freq: 140 * v, freqTo: 30 * v, dur: 0.15, gain: 0.18 });
+    this.noiseBurst(b, b.now, { dur: 0.08, gain: 0.1, from: 600, to: 80 });
+  }
+
+  playShieldBlock() {
+    const b = this.begin();
+    if (!b) return;
+    const v = this.vary();
+    this.blip(b, b.now, { type: 'sine', freq: 100 * v, freqTo: 30 * v, dur: 0.2, gain: 0.2 });
+    this.noiseBurst(b, b.now, { dur: 0.15, gain: 0.12, from: 500, to: 100 });
+  }
+
+  playHonorBellChime() {
+    const b = this.begin();
+    if (!b) return;
+    const v = this.vary(0.015);
+    this.blip(b, b.now, { type: 'sine', freq: 523.25 * v, dur: 1.35, gain: 0.14 });
+    this.blip(b, b.now, { type: 'triangle', freq: 1046.5 * v, dur: 1.05, gain: 0.08 });
+    this.blip(b, b.now + 0.02, { type: 'sine', freq: 1567.98 * v, dur: 0.85, gain: 0.05 });
+    this.blip(b, b.now + 0.05, { type: 'sine', freq: 2093.0 * v, dur: 0.7, gain: 0.035 });
+  }
+
+  playClownWoodenGong() {
+    const b = this.begin();
+    if (!b) return;
+    const v = this.vary(0.02);
+    this.blip(b, b.now, { type: 'triangle', freq: 148 * v, freqTo: 96 * v, dur: 0.75, gain: 0.22 });
+    this.blip(b, b.now, { type: 'sine', freq: 222 * v, freqTo: 146 * v, dur: 0.55, gain: 0.12 });
+    this.noiseBurst(b, b.now, { dur: 0.05, gain: 0.11, from: 900, to: 220 });
+  }
   playErrorBuzz() {
     const b = this.begin();
     if (!b) return;

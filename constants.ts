@@ -1,12 +1,21 @@
 import {SpriteConfig} from './utils/helper';
 
+export type CharacterSpriteId =
+  | 'sprite_lien_hoodie'
+  | 'sprite_lien_nausong'
+  | 'sprite_quan_gia_lam'
+  | 'sprite_thiman';
+
 export interface DialogueLine {
   id: number;
   speaker: string;
-  spriteId: 'sprite_lien_hoodie' | 'sprite_quan_gia_lam';
+  spriteId: CharacterSpriteId;
   action: string;
   dialogue: string;
   dramaticShake?: boolean;
+  screenShakeMs?: number;
+  woodKnock?: boolean;
+  candleBonus?: number;
 }
 
 /**
@@ -33,6 +42,7 @@ export const THEME = {
     dialogueText: '#f7f1e5',
     speakerLienBadge: '#3a4f3e',
     speakerQuanGiaBadge: '#2c2738',
+    speakerThiManBadge: '#5c3824',
     darkRedBtnTop: '#6b1616',
     darkRedBtnBottom: '#3d0a0a',
     darkRedBtnBorder: '#d4a853',
@@ -97,6 +107,7 @@ export const SCENE_1_SCRIPT: readonly DialogueLine[] = [
     dialogue:
       '"Con Liên! Giờ Dần đã điểm, khách quý họ Trương sắp tới phủ đối chiếu văn tự với con Mận. Ngươi còn nằm vùi trong ổ rơm xó kho đó làm gì, muốn nếm đủ ba mươi trượng gia pháp trước mặt Quan lớn hay sao?!"',
     dramaticShake: true,
+    woodKnock: true,
   },
   {
     id: 5,
@@ -259,17 +270,251 @@ export const SCENE_3_EXPLANATION_BODY =
   'Giải thích: Vua Lê Thánh Tông có 2 niên hiệu: Quang Thuận từ 1460–1469 và Hồng Đức từ 1470–1497. Năm Hồng Đức thứ 15 là 1470 + 14 = 1484, cũng là năm dựng bia Tiến sĩ đầu tiên tại Văn Miếu.';
 export const SCENE_3_CLAIM_REWARD_LABEL = 'Nhận phần thưởng';
 
-export const HINT_CONFIRM_PROMPT =
-  'Bạn có muốn tiêu hao 1 Nến Tri Thức để nhận gợi ý không?';
+/**
+ * Scene 4 (Cảnh 4) - Part 1: Encounter with Thị Mận on `nencanh2` (Lines 1–5).
+ */
+export const SCENE_4_PART_1_SCRIPT: readonly DialogueLine[] = [
+  {
+    id: 401,
+    speaker: 'Thị Mận',
+    spriteId: 'sprite_thiman',
+    action:
+      '[Vừa nhìn thấy Liên đang đứng trong góc kho, mắt cô bé mở to đầy kinh hãi, suýt bật tiếng kêu rồi vội lấy tay bịt miệng lại]',
+    dialogue:
+      '"Trời đất ơi... Tỷ Liên! Tỷ... tỷ lấy đâu ra thứ y phục quái dị, tay áo phồng to như cái bao bố mà lại không có vạt chéo thế kia !? , sau gáy lại lùng bùng cái mũ trùm đầu chẳng khác nào thích khách ! Hôm qua t... tỷ ngủ say trong kho đâu…đ..âu có mặc thứ này!"',
+    screenShakeMs: 600,
+  },
+  {
+    id: 402,
+    speaker: 'Liên',
+    spriteId: 'sprite_lien_hoodie',
+    action:
+      '[Giật mình nhìn xuống chiếc áo hoodie trên người, luống cuống kéo mũ áo xuống che bớt]',
+    dialogue:
+      '"À... ừm...ờ cái… cái này là... á…áo chống rét ở quê chị mới gửi lên! Mà khoan, nhìn em mặt mày tái mét, mắt đỏ hoe thế kia, có chuyện gì xảy ra à?"',
+    screenShakeMs: 380,
+    candleBonus: 2,
+  },
+  {
+    id: 403,
+    speaker: 'Thị Mận',
+    spriteId: 'sprite_thiman',
+    action:
+      '[Cúi gằm mặt, hai tay bấu chặt vạt áo nâu bạc màu, giọng run rẩy nức nở]',
+    dialogue:
+      '"Tỷ mau cởi thứ áo kỳ quặc đó ra đi, Quản gia Lâm mà nhìn thấy lại tưởng tỷ bị yêu ma nhập xác, lôi ra đình làng phạt vạ bây giờ! Sáng nay nhà họ Trương mang khế ước đến đòi siết mảnh ruộng hương hỏa của mẹ em. Thân phận nô tì thấp cổ bé họng như chị em mình, biết lấy gì mà cãi lại nhà giàu có thế lực..."',
+  },
+  {
+    id: 404,
+    speaker: 'Liên',
+    spriteId: 'sprite_lien_hoodie',
+    action:
+      '[Nhìn đôi vai gầy run rẩy của Thị Mận, vẻ nhí nhảnh lúc nãy dịu hẳn xuống, ánh mắt trở nên nghiêm túc và đồng cảm]',
+    dialogue:
+      '"Ra là vậy... Ở thời phong kiến này, thân phận nô tì đúng là thấp hèn thật, nhưng không có nghĩa là mình chịu khoanh tay để kẻ khác bắt nạt đâu."',
+  },
+  {
+    id: 405,
+    speaker: 'Quản gia Lâm (Ngoài hành lang trực gác)',
+    spriteId: 'sprite_quan_gia_lam',
+    action:
+      '[Gõ mạnh gậy gỗ xuống nền gạch, giọng khàn đặc, lạnh lẽo và đầy vẻ khinh miệt]',
+    dialogue:
+      '"Con Liên đâu! Lũ hạ tiện chúng bay chỉ biết ăn hại, còn rúc xó kho làm gì nữa?! Thân phận nô tì thấp hèn như cỏ rác, mau mở rương thay bộ vải thô sạch sẽ rồi bưng khay lễ vật ra thư phòng hầu hạ khách quý! Chớ có dại mà thò bàn tay dơ bẩn đụng vào đống lụa là của tiểu thư, kẻo tội phạm thượng chém đầu không tha!"',
+    dramaticShake: true,
+    screenShakeMs: 600,
+    woodKnock: true,
+  },
+];
+
+export const SCENE_4_RUN_TO_CHEST_LABEL = 'Chạy xuống chỗ chiếc rương';
+export const SCENE_4_CANDLE_BONUS_PREFIX =
+  'Che giấu thành công! Nhận được: Nến Tri Thức ';
+export const SCENE_4_CANDLE_BONUS_VALUE = '+2';
+
+/**
+ * Scene 4 (Cảnh 4) - Part 2: Wooden Chest & Chinese Character Lock (`35241`) on `nencanh4_ruong` (Lines 6–7).
+ */
+export const SCENE_4_PART_2_SCRIPT: readonly DialogueLine[] = [
+  {
+    id: 406,
+    speaker: 'Liên',
+    spriteId: 'sprite_lien_hoodie',
+    action:
+      '[Vội vã chạy tới chiếc rương gỗ lớn đặt ở góc kho, đưa tay nhấc nắp nhưng chiếc rương khóa chặt không nhúc nhích]',
+    dialogue:
+      '"Ủa, khóa cứng ngắc rồi! Trên nắp rương có khắc một bảng chữ Hán bị xáo trộn vị trí kèm 5 ô trống nhập số... Quản gia gài mật mã để tránh người ngoài lục đồ đây mà!"',
+  },
+  {
+    id: 407,
+    speaker: 'Thị Mận',
+    spriteId: 'sprite_thiman',
+    action: '[Rón rén lại gần, thì thào lo lắng]',
+    dialogue:
+      '"Tỷ Liên ơi, hôm qua Quản gia có dặn quy luật mở khóa rương này để gia nhân tự lấy áo, nhưng em dốt chữ nên không nhớ nổi... Tỷ…tỷ mau giải đi không… Quản gia ập vào bây giờ!"',
+  },
+];
+
+export const SCENE_4_PUZZLE_PROMPT =
+  'Dưới triều đại độc tôn Nho giáo, kẻ làm người muốn giữ trọn đạo làm tôi phải sắp xếp Ngũ Thường theo đúng thứ tự chuẩn mực của thánh hiền. Hãy giải mã 5 con chữ Hán trên nắp rương và nhập dãy 5 con số tương ứng với thứ tự chuẩn của Ngũ Thường!';
+export const SCENE_4_CLUE_BOARD_TEXT =
+  '1. 信  —  2. 禮  —  3. 仁  —  4. 智  —  5. 義';
+export const SCENE_4_DEDUCTION_NOTE =
+  'Thời vua Lê Thánh Tông độc tôn Nho giáo, coi trọng kỷ cương phép tắc. Thứ tự chuẩn của Ngũ Thường trong đạo Nho là: Nhân – Nghĩa – Lễ – Trí – Tín! Giờ phải nhận mặt từng chữ Hán đánh số trên kia rồi...';
+export const SCENE_4_CORRECT_PASSCODE = '35241';
+export const SCENE_4_PUT_AWAY_LABEL = 'Cất';
+export const SCENE_4_REOPEN_LOCK_LABEL = 'Mở bảng khóa';
+export const SCENE_4_WRONG_PASSCODE_MSG =
+  'Mật mã chưa chính xác, hãy đối chiếu lại thứ tự Ngũ Thường!';
+
+export const SCENE_4_EXPLANATION_TITLE = 'Chính xác! Đáp án: 35241';
+export const SCENE_4_EXPLANATION_BODY =
+  'Giải thích: Năm chữ Hán khắc trên nắp rương lần lượt là: 1. Tín (信) – 2. Lễ (禮) – 3. Nhân (仁) – 4. Trí (智) – 5. Nghĩa (義). Sắp xếp theo đúng trật tự chuẩn của Ngũ Thường dưới thời Nho giáo độc tôn (Nhân – Nghĩa – Lễ – Trí – Tín) ta được dãy số 3 – 5 – 2 – 4 – 1.';
+
+export const SCENE_4_OPEN_CHEST_BUTTON_LABEL = 'Mở nắp rương y phục ra';
+
+/**
+ * Scene 5 (Cảnh 5) - Opening Dialogue, 3 Giao Linh Robe Choices, Wrong Choice Game Overs, & Correct Choice Rewards.
+ */
+export const SCENE_5_OPENING_SCRIPT: readonly DialogueLine[] = [
+  {
+    id: 501,
+    speaker: 'Liên',
+    spriteId: 'sprite_lien_hoodie',
+    action:
+      '[Vội cởi phăng chiếc áo hoodie, cuộn tròn nhét tọt xuống đáy rương rồi thở phào]',
+    dialogue:
+      '"Phù... giấu kỹ cái áo này vào đáy rương đã, mặc ra ngoài chắc người ta tưởng mình bị điên mất!"',
+  },
+  {
+    id: 502,
+    speaker: 'Liên',
+    spriteId: 'sprite_lien_hoodie',
+    action: '[Nheo mắt nhìn 3 bộ áo cổ chéo trong rương, lẩm bẩm]',
+    dialogue:
+      '"Cái thời phong kiến này soi mói từng tí một từ đầu đến chân... Phận nô tì mà chọn nhầm màu áo của quý tộc là xác định ăn đòn ướt người, phải nhìn cho kỹ mới được!"',
+  },
+];
+
+export const SCENE_5_ROBE_CHOICE_1_LABEL = 'Mặc áo lụa vàng nghệ, viền gấm';
+export const SCENE_5_ROBE_CHOICE_2_LABEL = 'Mặc áo vải sa đỏ tía, ống tay rộng';
+export const SCENE_5_ROBE_CHOICE_3_LABEL =
+  'Mặc áo vải gai thô màu nâu sồng, ống tay hẹp';
+
+export const SCENE_5_WRONG_1_SCRIPT: readonly DialogueLine[] = [
+  {
+    id: 511,
+    speaker: 'Quản gia Lâm',
+    spriteId: 'sprite_quan_gia_lam',
+    action: '[Sầm mặt, trừng mắt khinh miệt chỉ thẳng tay vào bạn]',
+    dialogue:
+      '"Đồ hạ tiện chán sống rồi sao?! Thân phận nô tì thấp hèn như cỏ rác mà dám khoác lên người sắc vàng của bậc đế vương quý tộc! Người đâu, lôi con tiện tì này ra sân đánh đủ năm mươi trượng gia pháp, tống vào ngục tối!"',
+    dramaticShake: true,
+    screenShakeMs: 600,
+    woodKnock: true,
+  },
+  {
+    id: 512,
+    speaker: 'Liên',
+    spriteId: 'sprite_lien_hoodie',
+    action: '[Quỳ sụp xuống, mặt cắt không còn giọt máu, lắp bắp hoảng loạn]',
+    dialogue:
+      '"Ơ... khoan đã lão gia ! Cháu... cháu chỉ mặc nhầm thôi mà... Á! Đau quá... Buông ra… Buông ra !"',
+    screenShakeMs: 420,
+  },
+];
+
+export const SCENE_5_WRONG_2_SCRIPT: readonly DialogueLine[] = [
+  {
+    id: 521,
+    speaker: 'Quản gia Lâm',
+    spriteId: 'sprite_quan_gia_lam',
+    action: '[Nhếch mép cười lạnh lẽo, giọng đầy khinh bỉ]',
+    dialogue:
+      '"Hay cho lũ nô tì to gan! Vải sa đỏ tía vốn dành riêng cho bậc quan lại và tiểu thư khuê các, hạng hạ nhân thấp kém như ngươi cũng dám chạm vào ư? Lôi ra sân đánh ba mươi trượng răn đe, nhốt vào xó tối suốt đời!"',
+    dramaticShake: true,
+    screenShakeMs: 600,
+    woodKnock: true,
+  },
+  {
+    id: 522,
+    speaker: 'Liên',
+    spriteId: 'sprite_lien_hoodie',
+    action: '[Gục xuống nền đất lạnh ngắt, mếu máo tuyệt vọng, bị áp giải đi]',
+    dialogue:
+      '"Huhu... chỉ tại cái màu đỏ này thôi mà... Cháu biết lỗi rồi mà, đừng đánh nữa... Xong đời thật rồi...á… aaaa."',
+    screenShakeMs: 420,
+  },
+];
+
+export const SCENE_5_WHIP_FLASH_TEXT = 'Tiếng roi vút lên trong gió';
+
+export const SCENE_5_GAMEOVER_1_HEADER =
+  'Bạn chịu phạt trượng vì vi phạm điều cấm kỵ tối cao của hoàng gia !';
+export const SCENE_5_GAMEOVER_1_BULLETS: readonly string[] = [
+  '• Dưới thời Lê Sơ (đặc biệt là triều vua Lê Thánh Tông), triều đình áp dụng chế độ lễ nghi Nho giáo và phân hóa đẳng cấp vô cùng nghiêm ngặt qua trang phục.',
+  '• Màu vàng (Hoàng bào) và các họa tiết rồng phượng thêu chỉ kim tuyến là đặc quyền tuyệt đối chỉ dành riêng cho Nhà vua và Hoàng tộc. Bất kỳ ai (từ quan lại đến thường dân, nô tì) tự ý sử dụng sắc vàng hoặc hàng gấm vóc cung đình đều bị khép vào tội khi quân phạm thượng, xử phạt cực kỳ nặng nề.',
+];
+
+export const SCENE_5_GAMEOVER_2_HEADER =
+  'Bạn bị trừng phạt vì tự ý mặc trang phục của tầng lớp trên';
+export const SCENE_5_GAMEOVER_2_BULLETS: readonly string[] = [
+  '• Theo quy chế phục sắc dưới thời vua Lê Thánh Tông (năm 1466), màu đỏ, màu tía và các chất liệu cao cấp như lụa, gấm, vải sa chỉ dành cho quan lại triều đình (nhất phẩm đến tam phẩm mặc áo đỏ) và giới quý tộc, tiểu thư đài các.',
+  '• Đối với tầng lớp bình dân và nô tì, luật pháp quy định chỉ được mặc vải bông thô, vải gai với các gam màu trầm tối giản dị (như nâu sồng, đen, chàm) và ống tay gọn gàng để lao động. Việc nô tì mặc lụa là, màu sắc sặc sỡ bị coi là hành vi phá vỡ trật tự tôn ti của xã hội phong kiến.',
+];
+
+export const SCENE_5_REWIND_BUTTON_LABEL = 'Quay ngược thời gian';
+export const SCENE_5_REWIND_HUMOR_TEXT =
+  'Đau mông chưa bạn ơi? Sách giáo khoa Lịch sử chắc bạn dùng để úp mì tôm đúng không? :))';
+export const SCENE_5_RETRY_BUTTON_LABEL = 'Thử lại Cảnh 5';
+
+export const SCENE_5_CORRECT_LINE: DialogueLine = {
+  id: 531,
+  speaker: 'Liên',
+  spriteId: 'sprite_lien_nausong',
+  action:
+    '[Khoác bộ áo vải thô lên người, loay hoay buộc dây đai bên hông rồi phủi phủi vạt áo]',
+  dialogue:
+    '"Ui da, vải gì mà thô ráp cọ vào da ngứa hết cả người... Nhưng mà màu nâu sồng quê mùa với tay áo gọn thế này thì chuẩn rồi. Trông mình giờ y hệt người thời xưa luôn!"',
+};
+
+export const SCENE_5_FINISH_BUTTON_LABEL =
+  'Khép nắp rương lại, bước ra bàn chuẩn bị lễ vật cùng Thị Mận';
+
 export const SAVE_STORAGE_KEY = 'hlplk_save_v2';
 
 /**
  * Hint System ("Gợi ý" & "Ngọn Nến Tri Thức") Constants.
- * Strictly plain header `"Gợi ý"` without any numbers when displayed in the black feathered modal.
+ * Scene 3: max 3 hints, cost 1 each.
+ * Scene 5: max 6 hints, flat cost 2 candles for ALL hints (1st through 6th).
+ * Scene 4 & 6–8: max 6 hints, escalating cost (hints 1–3 cost 1 candle; hints 4–6 cost 2 candles).
  */
 export const INITIAL_KNOWLEDGE_CANDLES = 1;
-export const MAX_HINTS_PER_SCENE = 3;
-export const HINT_EXHAUSTED_MSG = 'Bạn đã dùng hết 3 lượt gợi ý cho cảnh này';
+export const SCENE_3_MAX_HINTS = 3;
+export const SCENE_4_TO_8_MAX_HINTS = 6;
+
+export function getMaxHintsForScene(sceneNumber: number): number {
+  return sceneNumber >= 4 ? SCENE_4_TO_8_MAX_HINTS : SCENE_3_MAX_HINTS;
+}
+
+export function getHintCost(sceneNumber: number, hintsUsedCount: number): number {
+  if (sceneNumber === 5) {
+    return 2;
+  }
+  if (sceneNumber >= 4 && hintsUsedCount >= 3) {
+    return 2;
+  }
+  return 1;
+}
+
+export function getHintExhaustedMessage(sceneNumber: number): string {
+  const max = getMaxHintsForScene(sceneNumber);
+  return `Bạn đã dùng hết ${max} lượt gợi ý cho cảnh này`;
+}
+
+export function getHintConfirmPrompt(cost: number): string {
+  return `Bạn có muốn tiêu hao ${cost} Nến Tri Thức để nhận gợi ý không?`;
+}
 
 export const SCENE_HINTS_BY_SCENE: Record<number, readonly string[]> = {
   3: [
@@ -277,11 +522,26 @@ export const SCENE_HINTS_BY_SCENE: Record<number, readonly string[]> = {
     "Vị minh quân trị vì 38 năm này từng dùng hai niên hiệu. Hãy xác định niên hiệu thứ hai của ngài bắt đầu khi nào, và sự kiện 'sử xanh khắc bia' đầu tiên diễn ra vào năm thứ bao nhiêu của niên hiệu đó.",
     'Năm đầu tiên của một niên hiệu luôn được tính là năm thứ nhất (nguyên niên), không phải năm thứ không. Hãy lấy mốc năm bắt đầu niên hiệu thứ hai cộng thêm khoảng cách chênh lệch thực tế đến năm thứ mười lăm.',
   ],
+  4: [
+    'Năm con chữ Hán trên rương vốn là chuẩn mực đạo đức cốt lõi của Nho gia. Tuy nhiên, có kẻ nói khóa phủ quan xếp theo thứ tự quân tử đối nhân xử thế từ trong ra ngoài, cũng có kẻ đồn phải xếp ngược từ chữ giữ lời hứa để răn đe đám gia nhân.',
+    'Bỏ qua lời đồn xếp ngược dành cho gia nhân — triều đại này độc tôn Nho học chính thống nên luôn lấy lòng trắc ẩn thương người làm gốc rễ đầu tiên, sau đó mới xét đến lẽ phải và phép tắc lễ nghi.',
+    'Để đọc được mặt chữ Hán trên khóa, hãy nhớ mặt chữ có bộ Nhân đứng (亻) ở vị trí số 3 mang nghĩa là lòng thương người; chữ có bộ Ngôn (言) ở vị trí số 1 mang nghĩa là chữ Tín; còn chữ số 2 mang nghĩa là Lễ nghi.',
+    'Năm mặt chữ Hán khắc sẵn theo thứ tự từ 1 đến 5 trên rương lần lượt là: 1. Tín (信) — 2. Lễ (禮) — 3. Nhân (仁) — 4. Trí (智) — 5. Nghĩa (義). Giờ bạn chỉ cần sắp xếp lại chúng theo đúng trình tự chuẩn của Ngũ Thường.',
+    'Trình tự chuẩn của Ngũ Thường trong đạo Nho bắt đầu bằng: Nhân → Nghĩa → Lễ, và hai đức tính cuối cùng là Trí → Tín. Hãy tự đối chiếu từng chữ với con số gắn sẵn từ 1 đến 5 ở gợi ý trước để nhập mật mã!',
+    'Hãy ghép lần lượt số thứ tự trên nắp rương theo đúng trình tự Ngũ Thường: Nhân (mang số 3) → Nghĩa (mang số 5) → Lễ (mang số 2) → Trí (mang số 4) → Tín (mang số 1). Hãy nhập liền 5 con số này vào ô khóa!',
+  ],
+  5: [
+    'Phục sắc triều Lê phân định sang hèn rất rõ: sắc vàng là vùng cấm của bậc đế vương. Riêng những ngày phủ quan đón khách quý, có người bảo gia nhân được phép mặc vải sa đỏ tía cho đẹp mặt chủ, kẻ lại khuyên chỉ nên mặc vải thô trầm màu như thường ngày.',
+    'Kỷ cương thời Lê Sơ không có bất kỳ ngoại lệ nào cho kẻ dưới vượt qua ranh giới đẳng cấp. Mọi chất liệu lụa là, gấm vóc hay sắc đỏ, sắc tía đều là đặc quyền của tầng lớp trên; kẻ hạ nhân chạm vào sẽ mang tội khi quân phạm thượng.',
+    'Hãy chọn bộ y phục mang đúng tính chất lao động của tầng lớp thấp nhất: chất liệu dệt từ sợi cây thô mộc, thiết kế tay áo gọn gàng không vướng víu và mang màu sắc giản dị của bùn đất quê nhà.',
+    'Hãy nhìn vào thiết kế ống tay của ba bộ y phục: kẻ ngồi không hưởng lộc hay vung tay ngâm thơ mới may tay áo thụng rộng thướt tha. Người phải bưng bê, quét dọn suốt ngày nếu mặc tay rộng sẽ vướng víu, chỉ có một kiểu dáng duy nhất giữ được sự gọn gàng.',
+    'Thuốc nhuộm sặc sỡ thời phong kiến vô cùng đắt đỏ và bị triều đình kiểm soát gắt gao theo phẩm hàm. Tầng lớp dưới đáy xã hội chỉ dùng những loại củ, vỏ cây rẻ tiền nhất trong tự nhiên để nhuộm vải, tạo nên sắc độ trầm mặc gắn liền với bùn đất.',
+    'Hãy tự ghép 3 mảnh dữ kiện bạn vừa suy luận được từ ba gợi ý trước để đối chiếu với 3 lựa chọn trong rương: (1) Sợi cây thô mộc + (2) Ống tay gọn gàng không vướng víu + (3) Màu trầm của đất quê. Bộ áo duy nhất hội tụ đủ cả ba yếu tố này chính là đường sống của bạn!',
+  ],
 };
 
 /**
- * Knowledge Candle Quiz Mini-Game ("Tích lũy Nến Tri Thức") — Exact 10-Question Bank.
- * Q1–Q9 (Short Answer & True/False) carry ~90% total selection pool weight while Q10 remains eligible.
+ * Knowledge Candle Quiz Mini-Game ("Tích lũy Nến Tri Thức").
  */
 export type QuizQuestionType = 'SHORT_ANSWER' | 'TRUE_FALSE' | 'MULTIPLE_CHOICE';
 
@@ -294,7 +554,7 @@ export interface QuizQuestion {
   weight: number;
 }
 
-export const QUIZ_QUESTION_BANK: readonly QuizQuestion[] = [
+export const SCENE_3_QUIZ_BANK: readonly QuizQuestion[] = [
   {
     id: 1,
     type: 'SHORT_ANSWER',
@@ -383,17 +643,146 @@ export const QUIZ_QUESTION_BANK: readonly QuizQuestion[] = [
   },
 ];
 
+export const SCENE_4_QUIZ_BANK: readonly QuizQuestion[] = [
+  {
+    id: 401,
+    type: 'TRUE_FALSE',
+    question:
+      'Nhận định sau Đúng hay Sai: Nhiều điều khoản trong Quốc triều hình luật thể hiện sự quan tâm bảo vệ sản xuất nông nghiệp, sức kéo (trâu bò), đê điều và quyền lợi của người phụ nữ, trẻ em.',
+    correct: 'Đúng',
+    weight: 1,
+  },
+  {
+    id: 402,
+    type: 'TRUE_FALSE',
+    question:
+      "Nhận định sau Đúng hay Sai: Việc pháp điển hóa các quy tắc đạo đức Nho giáo thành điều luật cụ thể trong Quốc triều hình luật cho thấy sự kết hợp chặt chẽ giữa 'đức trị' và 'pháp trị' của nhà Lê Sơ.",
+    correct: 'Đúng',
+    weight: 1,
+  },
+  {
+    id: 403,
+    type: 'TRUE_FALSE',
+    question:
+      'Nhận định sau Đúng hay Sai: Việc dựng bia Tiến sĩ tại Văn Miếu không chỉ nhằm vinh danh người đỗ đạt mà còn là biện pháp răn đe, nhắc nhở kẻ sĩ giữ gìn thanh danh và trung thành với triều đình.',
+    correct: 'Đúng',
+    weight: 1,
+  },
+  {
+    id: 404,
+    type: 'TRUE_FALSE',
+    question:
+      'Nhận định sau Đúng hay Sai: Cơ chế tuyển dụng quan lại chủ yếu qua thi cử Nho học thời Lê Sơ giúp mở rộng cơ hội tham chính cho tầng lớp bình dân có học, làm thay đổi cơ cấu tầng lớp thống trị từ quý tộc sang quan liêu nho sĩ.',
+    correct: 'Đúng',
+    weight: 1,
+  },
+  {
+    id: 405,
+    type: 'TRUE_FALSE',
+    question:
+      'Nhận định sau Đúng hay Sai: Trong quan hệ với phương Bắc thời Lê Thánh Tông, nhà Lê Sơ chủ trương dùng vũ lực tấn công phủ đầu thay vì đấu tranh ngoại giao và giữ gìn biên cương.',
+    correct: 'Sai',
+    weight: 1,
+  },
+  {
+    id: 406,
+    type: 'TRUE_FALSE',
+    question:
+      'Nhận định sau Đúng hay Sai: Văn hóa thời Hậu Lê thể hiện sự vận động từ tính chuẩn mực, quy phạm của văn hóa cung đình Nho giáo thế kỷ XV sang tính đa dạng, phóng khoáng và đậm chất dân gian ở thế kỷ XVII – XVIII.',
+    correct: 'Đúng',
+    weight: 1,
+  },
+];
+
+export const SCENE_5_QUIZ_BANK: readonly QuizQuestion[] = [
+  {
+    id: 501,
+    type: 'SHORT_ANSWER',
+    question:
+      'Vua Lê Thánh Tông khởi xướng việc dựng tấm bia Tiến sĩ đầu tiên tại Văn Miếu – Quốc Tử Giám (ghi danh khoa thi năm 1442) vào năm dương lịch nào?',
+    correct: '1484',
+    weight: 1,
+  },
+  {
+    id: 502,
+    type: 'SHORT_ANSWER',
+    question:
+      'Giữa thời điểm nhà Lê Sơ bị nhà Mạc cướp ngôi (1527) và thời điểm Nguyễn Kim tôn lập Lê Duy Ninh lên ngôi mở đầu giai đoạn Lê Trung hưng (1533), ngai vàng nhà Hậu Lê bị gián đoạn trong bao nhiêu năm?',
+    correct: '6',
+    weight: 1,
+  },
+  {
+    id: 503,
+    type: 'MULTIPLE_CHOICE',
+    question:
+      'Vì sao trong cuộc cải cách hành chính thời Lê Sơ, các cơ quan thanh tra – giám sát như Ngự sử đài và Lục khoa lại được trao quyền độc lập tương đối để giám sát hoạt động của Lục bộ?',
+    options: [
+      'A. Nhằm tạo cơ chế kiểm soát quyền lực nội bộ, ngăn ngừa quan lại tham nhũng, lạm quyền.',
+      'B. Nhằm thay thế hoàn toàn chức năng xét xử hình sự của Bộ Hình và Tam pháp ty.',
+      'C. Nhằm chuyển giao quyền điều hành hành chính sang cho đội ngũ nho sĩ mới đỗ đạt.',
+      'D. Nhằm hạn chế sự can thiệp của triều đình trung ương vào công việc của các đạo thừa tuyên.',
+    ],
+    correct: 'A',
+    weight: 1,
+  },
+  {
+    id: 504,
+    type: 'MULTIPLE_CHOICE',
+    question:
+      'Chính sách quân điền thời Lê Sơ tác động trực tiếp như thế nào đến mối quan hệ giữa nhà nước phong kiến với kinh tế nông nghiệp và làng xã?',
+    options: [
+      'A. Xóa bỏ hoàn toàn quyền sở hữu ruộng đất tư nhân của địa chủ trên toàn quốc.',
+      'B. Khôi phục mô hình điền trang, thái ấp lớn của tầng lớp vương hầu quý tộc như thời Trần.',
+      'C. Khẳng định quyền sở hữu tối cao của nhà nước đối với ruộng đất công làng xã, ràng buộc nông dân vào ruộng đất để thu tô thuế.',
+      'D. Chuyển toàn bộ ruộng công làng xã thành đồn điền do quân đội trực tiếp canh tác.',
+    ],
+    correct: 'C',
+    weight: 1,
+  },
+  {
+    id: 505,
+    type: 'MULTIPLE_CHOICE',
+    question:
+      'Cơ chế tổ chức ở cấp đạo thừa tuyên thời Lê Thánh Tông với ba cơ quan ngang quyền là Đô ty (quân sự), Thừa ty (hành chính – tài chính) và Hiến ty (thanh tra – tư pháp) có tác dụng gì?',
+    options: [
+      'A. Tạo điều kiện cho các quan đứng đầu đạo thâu tóm cả binh quyền lẫn tài chính.',
+      'B. Phân tán quyền lực ở cấp địa phương, ngăn chặn nguy cơ hình thành các thế lực quân phiệt cát cứ.',
+      'C. Rút gọn bộ máy hành chính địa phương xuống chỉ còn một đầu mối duy nhất.',
+      'D. Xóa bỏ hoàn toàn cấp hành chính phủ, huyện và xã bên dưới đạo thừa tuyên.',
+    ],
+    correct: 'B',
+    weight: 1,
+  },
+  {
+    id: 506,
+    type: 'MULTIPLE_CHOICE',
+    question:
+      'Bài học kinh nghiệm nào từ cuộc cải cách hành chính của vua Lê Thánh Tông có giá trị tham khảo sâu sắc nhất đối với công cuộc xây dựng nền hành chính nhà nước pháp quyền hiện nay?',
+    options: [
+      'A. Tập trung toàn bộ quyền lập pháp, hành pháp và tư pháp vào một cá nhân đứng đầu.',
+      'B. Phân định rành mạch chức năng, thẩm quyền giữa các cơ quan chuyên môn gắn với cơ chế thanh tra, giám sát chéo và tuyển chọn cán bộ dựa trên thực tài.',
+      'C. Áp dụng nguyên tắc độc tôn một hệ tư tưởng duy nhất để loại bỏ phản biện.',
+      'D. Chia nhỏ đơn vị hành chính đến mức tối đa để triệt tiêu tính chủ động của địa phương.',
+    ],
+    correct: 'B',
+    weight: 1,
+  },
+];
+
 export const QUIZ_WIN_MSG = 'Chúc mừng! Bạn đã nhận được 1 Ngọn Nến Tri Thức';
 export const QUIZ_FAIL_MSG = 'Chưa chính xác! Hãy thử lại lượt câu hỏi mới nhé.';
 
 /**
- * Historical Badge Collection System ("Bộ sưu tập").
+ * Historical Badge & Item Collection System ("Bộ sưu tập") + Achievement System ("Danh hiệu").
  */
 export interface BadgeDefinition {
   id: string;
   assetKey: string;
   title: string;
   detailText: string;
+  aspectRatio: number;
+  kind?: 'badge' | 'item';
+  hiddenUntilUnlocked?: boolean;
 }
 
 export const BIA_TIEN_SI_BADGE: BadgeDefinition = {
@@ -402,11 +791,109 @@ export const BIA_TIEN_SI_BADGE: BadgeDefinition = {
   title: 'Bia Tiến Sĩ Khoa Nhâm Tuất',
   detailText:
     'Bạn có biết? Thời vua Lê Thánh Tông, đỗ Tiến sĩ không chỉ được khắc tên lên bia đá mà còn được triều đình "bao trọn gói" lễ Vinh quy bái tổ: vua ban mũ áo, mở tiệc yến tại vườn Thượng Uyển và cấp quân lính rước võng lọng linh đình về tận quê nhà.',
+  aspectRatio: 598 / 852,
+  kind: 'badge',
+};
+
+export const GIA_HUAN_CA_BADGE: BadgeDefinition = {
+  id: 'huyhieu_giahuanca',
+  assetKey: 'huyhieu_giahuanca',
+  title: 'Gia Huấn Ca Của Bậc Nho Sĩ',
+  detailText:
+    'Bạn có biết? Dưới thời Lê Thánh Tông, Nho giáo trở thành hệ tư tưởng độc tôn chi phối từ triều chính đến nếp nhà. Các chuẩn mực Tam Cương, Ngũ Thường (Nhân – Nghĩa – Lễ – Trí – Tín) và những khúc ca giáo huấn gia phong được truyền dạy rộng rãi để rèn giũa đạo làm người, giữ gìn trật tự kỷ cương Đại Việt.',
+  aspectRatio: 1024 / 1024,
+  kind: 'badge',
+};
+
+export const CAM_NANG_PHUC_SAC_BADGE: BadgeDefinition = {
+  id: 'huyhieu_phucsac',
+  assetKey: 'huyhieu_phucsac',
+  title: 'Cẩm Nang Phục Sắc Đại Việt',
+  detailText:
+    'Bạn có biết? Quốc triều hình luật (Luật Hồng Đức) quy định khắt khe màu áo theo phẩm trật: Hoàng đế mặc sắc vàng, quan nhất phẩm mặc tía, quan nhị - tam phẩm mặc đỏ, thường dân chỉ được mặc nâu, đen, trắng. Mặc sai màu quy định bị khép tội phạm thượng.',
+  aspectRatio: 683 / 485,
+  kind: 'badge',
+};
+
+export const THE_BAI_GIA_NHAN_ITEM: BadgeDefinition = {
+  id: 'item_thebai',
+  assetKey: 'item_thebai',
+  title: 'Thẻ Bài Gia Nhân Phủ Quan',
+  detailText:
+    'Giấy thông hành hợp pháp để bước ra hành lang chính và vào Thư phòng',
+  aspectRatio: 241 / 761,
+  kind: 'item',
+};
+
+export const TRAM_CAI_NGOC_BICH_ITEM: BadgeDefinition = {
+  id: 'item_tramngocbich',
+  assetKey: 'item_tramngocbich',
+  title: 'Chiếc Trâm Cài Ngọc Bích',
+  detailText:
+    'Bảo vật ẩn giấu: Tự động hóa giải và chặn đứng 1 lần bị trừ điểm Tín nhiệm tiếp theo trong hành trình.',
+  aspectRatio: 484 / 748,
+  kind: 'item',
+  hiddenUntilUnlocked: true,
 };
 
 export const COLLECTION_BADGES: readonly BadgeDefinition[] = [
   BIA_TIEN_SI_BADGE,
+  GIA_HUAN_CA_BADGE,
+  CAM_NANG_PHUC_SAC_BADGE,
 ];
+
+export const COLLECTION_ITEMS: readonly BadgeDefinition[] = [
+  THE_BAI_GIA_NHAN_ITEM,
+  TRAM_CAI_NGOC_BICH_ITEM,
+];
+
+export type AchievementVariant = 'honor' | 'clown';
+
+export interface AchievementTitleDefinition {
+  id: string;
+  variant: AchievementVariant;
+  categoryLabel: string;
+  subTab: 'honor' | 'clown';
+  title: string;
+  description: string;
+}
+
+export const TITLE_BAC_THAY_NHAP_THE: AchievementTitleDefinition = {
+  id: 'bac_thay_nhap_the',
+  variant: 'honor',
+  categoryLabel: 'Danh hiệu Vinh Dự',
+  subTab: 'honor',
+  title: 'Bậc Thầy Nhập Thế',
+  description:
+    'Không cần nến soi đường, không một lần vấp ngã. Trí tuệ và sự cẩn trọng của ngươi đã vượt xa một kẻ mới lạc bước vào chốn phủ quan!',
+};
+
+export const TITLE_PHA_GIA_CHI_TU: AchievementTitleDefinition = {
+  id: 'pha_gia_chi_tu',
+  variant: 'clown',
+  categoryLabel: 'Danh hiệu Chúa Hề',
+  subTab: 'clown',
+  title: 'Phá gia chi tử',
+  description: 'Đã nhờ đến tổ tiên mà vẫn ko qua được, chán nhỉ ?',
+};
+
+export const TITLE_VUA_LI_DON: AchievementTitleDefinition = {
+  id: 'vua_li_don',
+  variant: 'clown',
+  categoryLabel: 'Danh hiệu Chúa Hề',
+  subTab: 'clown',
+  title: 'Vua Lì Đòn Đất Thăng Long',
+  description: 'Bái phục ! Xin hãy nhận 1 lạy từ đệ tử .',
+};
+
+export const ACHIEVEMENT_TITLES: readonly AchievementTitleDefinition[] = [
+  TITLE_BAC_THAY_NHAP_THE,
+  TITLE_PHA_GIA_CHI_TU,
+  TITLE_VUA_LI_DON,
+];
+
+export const COLLECTION_EMPTY_TITLES_MSG =
+  'Hành trình vừa mới bắt đầu... Hiện chưa ghi nhận dấu ấn nào.';
 
 export interface SceneBackgroundSlot {
   sceneNumber: number;
@@ -420,10 +907,9 @@ export interface SceneBackgroundSlot {
 }
 
 /**
- * Extensible Scene Background Mapping Dictionary (Scene 1 -> Scene 7+).
- * Scene 2 and Scene 3 share `nencanh2` (`assets/images/nencanh2.png`).
+ * Extensible Scene Background Mapping Dictionary (Scene 1 -> Scene 7+, plus sub-backgrounds).
  */
-export const SCENE_BACKGROUND_REGISTRY: Record<number, SceneBackgroundSlot> = {
+export const SCENE_BACKGROUND_REGISTRY: Record<string, SceneBackgroundSlot> = {
   1: {
     sceneNumber: 1,
     key: 'scene1_background',
@@ -464,25 +950,35 @@ export const SCENE_BACKGROUND_REGISTRY: Record<number, SceneBackgroundSlot> = {
     height: 768,
     preloadByDefault: true,
   },
-  5: {
-    sceneNumber: 5,
-    key: 'nencanh5',
-    alias: 'Scene5_Background',
-    defaultPath: 'assets/images/nencanh5.png',
+  '4_ruong': {
+    sceneNumber: 4,
+    key: 'nencanh4_ruong',
+    alias: 'Scene4_Ruong_Background',
+    defaultPath: 'assets/images/nencanh4_ruong.png',
     aspectRatio: 1376 / 768,
     width: 1376,
     height: 768,
-    preloadByDefault: false,
+    preloadByDefault: true,
+  },
+  5: {
+    sceneNumber: 5,
+    key: 'nencanh5_ruongao',
+    alias: 'Scene5_RuongAo_Background',
+    defaultPath: 'assets/images/nencanh5_ruongao.png',
+    aspectRatio: 1376 / 768,
+    width: 1376,
+    height: 768,
+    preloadByDefault: true,
   },
   6: {
     sceneNumber: 6,
-    key: 'nencanh6',
-    alias: 'Scene6_Background',
-    defaultPath: 'assets/images/nencanh6.png',
+    key: 'nencanh5_ruongao',
+    alias: 'Scene6_Prep_Background',
+    defaultPath: 'assets/images/nencanh5_ruongao.png',
     aspectRatio: 1376 / 768,
     width: 1376,
     height: 768,
-    preloadByDefault: false,
+    preloadByDefault: true,
   },
   7: {
     sceneNumber: 7,
@@ -500,7 +996,6 @@ export const SCENE_BACKGROUND_REGISTRY: Record<number, SceneBackgroundSlot> = {
  * Configuration for the game.
  */
 export const CONFIG = {
-  // Core game initialization values
   title: {
     value: 'Hậu Lê Phiêu Lưu Ký',
     type: 'string',
@@ -519,16 +1014,12 @@ export const CONFIG = {
     label: 'Base Canvas Height',
     group: 'GAME',
   },
-
-  // Preserved template key
   playerSprite: {
     value: undefined as SpriteConfig | undefined,
     type: 'sprite',
     label: 'Player Sprite',
     group: 'Visuals',
   },
-
-  // System Constants for the update loop
   targetFPS: {
     value: 60,
     type: 'number',
@@ -547,8 +1038,6 @@ export const CONFIG = {
     label: 'Max Sub Steps',
     group: 'SYSTEM',
   },
-
-  // Thematic elements enforcing the Later Lê visual novel aesthetic
   backgroundColor: {
     value: '#120d0a',
     type: 'color',
@@ -567,8 +1056,6 @@ export const CONFIG = {
     label: 'Font Family',
     group: 'THEME',
   },
-
-  // Standard audio levels
   defaultMusicVolume: {
     value: 0.18,
     type: 'number',
@@ -581,8 +1068,6 @@ export const CONFIG = {
     label: 'Default SFX Volume',
     group: 'AUDIO',
   },
-
-  // Visual Novel Reading & Presentation Rules
   enableTypewriter: {
     value: true,
     type: 'boolean',
@@ -620,7 +1105,7 @@ export const CONFIG = {
     group: 'Visuals',
   },
   portraitTransitionSpeed: {
-    value: 6,
+    value: 8,
     type: 'number',
     label: 'Tốc độ chuyển chân dung',
     group: 'Visuals',
@@ -651,8 +1136,20 @@ export const CONFIG = {
     label: 'Liên Portrait Y',
     group: 'Layout',
   },
+  lienNauSongTargetX: {
+    value: 220,
+    type: 'number',
+    label: 'Liên Nâu Sồng Portrait X',
+    group: 'Layout',
+  },
+  lienNauSongTargetY: {
+    value: 86,
+    type: 'number',
+    label: 'Liên Nâu Sồng Portrait Y',
+    group: 'Layout',
+  },
   quanGiaTargetX: {
-    value: 825,
+    value: 760,
     type: 'number',
     label: 'Quản Gia Lâm Portrait X',
     group: 'Layout',
@@ -663,6 +1160,18 @@ export const CONFIG = {
     label: 'Quản Gia Lâm Portrait Y',
     group: 'Layout',
   },
+  thiManTargetX: {
+    value: 850,
+    type: 'number',
+    label: 'Thị Mận Portrait X',
+    group: 'Layout',
+  },
+  thiManTargetY: {
+    value: 86,
+    type: 'number',
+    label: 'Thị Mận Portrait Y',
+    group: 'Layout',
+  },
   dialogueBoxBottomMargin: {
     value: 14,
     type: 'number',
@@ -671,7 +1180,6 @@ export const CONFIG = {
   },
 
   // Exact Asset Dimensions & Aspect Ratios from read_assets_metadata
-  // 1. menu_background: 1376x768
   assetMenuBgAspectRatio: {
     value: 1376 / 768,
     type: 'number',
@@ -691,7 +1199,6 @@ export const CONFIG = {
     group: 'ASSETS',
   },
 
-  // 2. scene1_background: 1376x768
   assetScene1BgAspectRatio: {
     value: 1376 / 768,
     type: 'number',
@@ -711,7 +1218,6 @@ export const CONFIG = {
     group: 'ASSETS',
   },
 
-  // 2b. nencanh2 (Scene 2 & Scene 3 Background): 1376x768
   assetNenCanh2AspectRatio: {
     value: 1376 / 768,
     type: 'number',
@@ -731,9 +1237,49 @@ export const CONFIG = {
     group: 'ASSETS',
   },
 
-  // 3. sprite_lien_hoodie: 692x947
+  // nencanh4_ruong: 1376x768
+  assetNenCanh4RuongAspectRatio: {
+    value: 1376 / 768,
+    type: 'number',
+    label: 'Scene 4 Chest Background (nencanh4_ruong) Aspect Ratio',
+    group: 'ASSETS',
+  },
+  assetNenCanh4RuongWidth: {
+    value: 1376,
+    type: 'number',
+    label: 'Scene 4 Chest Background Width',
+    group: 'ASSETS',
+  },
+  assetNenCanh4RuongHeight: {
+    value: 768,
+    type: 'number',
+    label: 'Scene 4 Chest Background Height',
+    group: 'ASSETS',
+  },
+
+  // nencanh5_ruongao: 1376x768
+  assetNenCanh5RuongAoAspectRatio: {
+    value: 1376 / 768,
+    type: 'number',
+    label: 'Scene 5 Open Chest Background (nencanh5_ruongao) Aspect Ratio',
+    group: 'ASSETS',
+  },
+  assetNenCanh5RuongAoWidth: {
+    value: 1376,
+    type: 'number',
+    label: 'Scene 5 Open Chest Background Width',
+    group: 'ASSETS',
+  },
+  assetNenCanh5RuongAoHeight: {
+    value: 768,
+    type: 'number',
+    label: 'Scene 5 Open Chest Background Height',
+    group: 'ASSETS',
+  },
+
+  // sprite_lien_hoodie: 879x1024
   assetLienAspectRatio: {
-    value: 692 / 947,
+    value: 879 / 1024,
     type: 'number',
     label: 'Sprite Liên Aspect Ratio',
     group: 'ASSETS',
@@ -745,15 +1291,35 @@ export const CONFIG = {
     group: 'ASSETS',
   },
   assetLienWidth: {
-    value: Math.round(636 * (692 / 947)), // 465
+    value: Math.round(636 * (879 / 1024)),
     type: 'number',
     label: 'Sprite Liên Width',
     group: 'ASSETS',
   },
 
-  // 4. sprite_quan_gia_lam: 548x986
+  // sprite_lien_nausong: 349x953
+  assetLienNauSongAspectRatio: {
+    value: 349 / 953,
+    type: 'number',
+    label: 'Sprite Liên Nâu Sồng Aspect Ratio',
+    group: 'ASSETS',
+  },
+  assetLienNauSongHeight: {
+    value: 632,
+    type: 'number',
+    label: 'Sprite Liên Nâu Sồng Height',
+    group: 'ASSETS',
+  },
+  assetLienNauSongWidth: {
+    value: Math.round(632 * (349 / 953)),
+    type: 'number',
+    label: 'Sprite Liên Nâu Sồng Width',
+    group: 'ASSETS',
+  },
+
+  // sprite_quan_gia_lam: 991x1009
   assetQuanGiaAspectRatio: {
-    value: 548 / 986,
+    value: 991 / 1009,
     type: 'number',
     label: 'Sprite Quản Gia Lâm Aspect Ratio',
     group: 'ASSETS',
@@ -765,13 +1331,33 @@ export const CONFIG = {
     group: 'ASSETS',
   },
   assetQuanGiaWidth: {
-    value: Math.round(656 * (548 / 986)), // 365
+    value: Math.round(656 * (991 / 1009)),
     type: 'number',
     label: 'Sprite Quản Gia Lâm Width',
     group: 'ASSETS',
   },
 
-  // 5. dialogue_box_frame: 888x277
+  // sprite_thiman: 920x1024
+  assetThiManAspectRatio: {
+    value: 920 / 1024,
+    type: 'number',
+    label: 'Sprite Thị Mận Aspect Ratio',
+    group: 'ASSETS',
+  },
+  assetThiManHeight: {
+    value: 628,
+    type: 'number',
+    label: 'Sprite Thị Mận Height',
+    group: 'ASSETS',
+  },
+  assetThiManWidth: {
+    value: Math.round(628 * (920 / 1024)),
+    type: 'number',
+    label: 'Sprite Thị Mận Width',
+    group: 'ASSETS',
+  },
+
+  // dialogue_box_frame: 888x277
   assetDialogueBoxAspectRatio: {
     value: 888 / 277,
     type: 'number',
@@ -785,13 +1371,13 @@ export const CONFIG = {
     group: 'ASSETS',
   },
   assetDialogueBoxHeight: {
-    value: Math.round(1088 / (888 / 277)), // 339
+    value: Math.round(1088 / (888 / 277)),
     type: 'number',
     label: 'Dialogue Box Frame Height',
     group: 'ASSETS',
   },
 
-  // 6. menu_button_sprite: 814x229
+  // menu_button_sprite: 814x229
   assetMenuButtonAspectRatio: {
     value: 814 / 229,
     type: 'number',
@@ -805,53 +1391,53 @@ export const CONFIG = {
     group: 'ASSETS',
   },
   assetMenuButtonHeight: {
-    value: Math.round(300 / (814 / 229)), // 84
+    value: Math.round(300 / (814 / 229)),
     type: 'number',
     label: 'Menu Button Sprite Height',
     group: 'ASSETS',
   },
 
-  // 7. giaydo_baive: 628x860
+  // giaydo_baive: 596x844
   assetGiayDoAspectRatio: {
-    value: 628 / 860,
+    value: 596 / 844,
     type: 'number',
     label: 'Dó Paper (giaydo_baive) Aspect Ratio',
     group: 'ASSETS',
   },
   assetGiayDoWidth: {
-    value: 628,
+    value: 596,
     type: 'number',
     label: 'Dó Paper Width',
     group: 'ASSETS',
   },
   assetGiayDoHeight: {
-    value: 860,
+    value: 844,
     type: 'number',
     label: 'Dó Paper Height',
     group: 'ASSETS',
   },
 
-  // 8. icon_goiy: 598x500
+  // icon_goiy: 540x613
   assetIconGoiYAspectRatio: {
-    value: 598 / 500,
+    value: 540 / 613,
     type: 'number',
     label: 'Hint Icon (icon_goiy) Aspect Ratio',
     group: 'ASSETS',
   },
   assetIconGoiYWidth: {
-    value: 598,
+    value: 540,
     type: 'number',
     label: 'Hint Icon Width',
     group: 'ASSETS',
   },
   assetIconGoiYHeight: {
-    value: 500,
+    value: 613,
     type: 'number',
     label: 'Hint Icon Height',
     group: 'ASSETS',
   },
 
-  // 9. icon_bosuutap: 794x466
+  // icon_bosuutap: 794x466
   assetIconBoSuuTapAspectRatio: {
     value: 794 / 466,
     type: 'number',
@@ -871,7 +1457,27 @@ export const CONFIG = {
     group: 'ASSETS',
   },
 
-  // 10. nen_popup: 1376x768
+  // icon_tramcai: 556x818
+  assetIconTramCaiAspectRatio: {
+    value: 556 / 818,
+    type: 'number',
+    label: 'Hairpin Icon (icon_tramcai) Aspect Ratio',
+    group: 'ASSETS',
+  },
+  assetIconTramCaiWidth: {
+    value: 556,
+    type: 'number',
+    label: 'Hairpin Icon Width',
+    group: 'ASSETS',
+  },
+  assetIconTramCaiHeight: {
+    value: 818,
+    type: 'number',
+    label: 'Hairpin Icon Height',
+    group: 'ASSETS',
+  },
+
+  // nen_popup: 1376x768
   assetNenPopupAspectRatio: {
     value: 1376 / 768,
     type: 'number',
@@ -891,7 +1497,7 @@ export const CONFIG = {
     group: 'ASSETS',
   },
 
-  // 11. huyhieu_biatiensi: 598x852
+  // huyhieu_biatiensi: 598x852
   assetHuyHieuBiaTienSiAspectRatio: {
     value: 598 / 852,
     type: 'number',
@@ -910,9 +1516,88 @@ export const CONFIG = {
     label: 'Badge Bia Tiến Sĩ Height',
     group: 'ASSETS',
   },
+
+  // huyhieu_giahuanca: 1024x1024
+  assetHuyHieuGiaHuanCaAspectRatio: {
+    value: 1024 / 1024,
+    type: 'number',
+    label: 'Badge Gia Huấn Ca (huyhieu_giahuanca) Aspect Ratio',
+    group: 'ASSETS',
+  },
+  assetHuyHieuGiaHuanCaWidth: {
+    value: 1024,
+    type: 'number',
+    label: 'Badge Gia Huấn Ca Width',
+    group: 'ASSETS',
+  },
+  assetHuyHieuGiaHuanCaHeight: {
+    value: 1024,
+    type: 'number',
+    label: 'Badge Gia Huấn Ca Height',
+    group: 'ASSETS',
+  },
+
+  // huyhieu_phucsac: 683x485
+  assetHuyHieuPhucSacAspectRatio: {
+    value: 683 / 485,
+    type: 'number',
+    label: 'Badge Cẩm Nang Phục Sắc (huyhieu_phucsac) Aspect Ratio',
+    group: 'ASSETS',
+  },
+  assetHuyHieuPhucSacWidth: {
+    value: 683,
+    type: 'number',
+    label: 'Badge Cẩm Nang Phục Sắc Width',
+    group: 'ASSETS',
+  },
+  assetHuyHieuPhucSacHeight: {
+    value: 485,
+    type: 'number',
+    label: 'Badge Cẩm Nang Phục Sắc Height',
+    group: 'ASSETS',
+  },
+
+  // item_thebai: 241x761
+  assetItemTheBaiAspectRatio: {
+    value: 241 / 761,
+    type: 'number',
+    label: 'Item Thẻ Bài Gia Nhân (item_thebai) Aspect Ratio',
+    group: 'ASSETS',
+  },
+  assetItemTheBaiWidth: {
+    value: 241,
+    type: 'number',
+    label: 'Item Thẻ Bài Gia Nhân Width',
+    group: 'ASSETS',
+  },
+  assetItemTheBaiHeight: {
+    value: 761,
+    type: 'number',
+    label: 'Item Thẻ Bài Gia Nhân Height',
+    group: 'ASSETS',
+  },
+
+  // item_tramngocbich: 484x748
+  assetItemTramNgocBichAspectRatio: {
+    value: 484 / 748,
+    type: 'number',
+    label: 'Item Trâm Cài Ngọc Bích (item_tramngocbich) Aspect Ratio',
+    group: 'ASSETS',
+  },
+  assetItemTramNgocBichWidth: {
+    value: 484,
+    type: 'number',
+    label: 'Item Trâm Cài Ngọc Bích Width',
+    group: 'ASSETS',
+  },
+  assetItemTramNgocBichHeight: {
+    value: 748,
+    type: 'number',
+    label: 'Item Trâm Cài Ngọc Bích Height',
+    group: 'ASSETS',
+  },
 };
 
-// Merge customized config values if present via standard global or localStorage
 const {GAME_CONFIG} = globalThis as {
   GAME_CONFIG?: Record<string, unknown>;
 };
@@ -924,23 +1609,12 @@ if (GAME_CONFIG) {
   }
 }
 
-/**
- * Type helper for reading values in game code
- */
 export type ConfigKey = keyof typeof CONFIG;
 
-/**
- * Gets a configuration value by key.
- * @param key The configuration key.
- * @return The configuration value.
- */
 export function getConfig<K extends ConfigKey>(
   key: K,
 ): (typeof CONFIG)[K]['value'] {
   return CONFIG[key].value;
 }
 
-/**
- * Optional presets
- */
 export const PRESETS = {};

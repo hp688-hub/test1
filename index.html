@@ -45,8 +45,9 @@
       display: none !important;
     }
 
-    /* Top HUD Bar during Gameplay (z-index: 30 so Top-Right HUD & Top-Center Puzzle Prompt sit cleanly above base scene) */
+    /* Top HUD Bar during Gameplay (z-index: 44 & overflow: visible so Trust HUD + floating deltas stay visible) */
     .vn-topbar {
+      position: relative;
       width: 100%;
       min-height: 62px;
       display: flex;
@@ -56,9 +57,10 @@
       padding: 6px 32px;
       background-color: #120d0a;
       border-bottom: 1px solid rgba(182, 137, 69, 0.28);
-      z-index: 30;
+      z-index: 44;
       flex-shrink: 0;
       gap: 10px;
+      overflow: visible;
     }
 
     .vn-topbar-left {
@@ -100,16 +102,183 @@
     }
 
     .vn-topcenter-puzzle-pill {
+      max-width: 780px;
       padding: 6px 16px;
-      border-radius: 999px;
-      background-color: rgba(10, 6, 4, 0.88);
-      border: 1px solid rgba(255, 59, 59, 0.5);
+      border-radius: 16px;
+      background-color: rgba(10, 6, 4, 0.9);
+      border: 1px solid rgba(255, 59, 59, 0.55);
       color: #FF3B3B;
       font-weight: 700;
-      font-size: clamp(12px, 1.28vw, 16px);
+      font-size: clamp(11px, 1.08vw, 14px);
       line-height: 1.35;
       text-align: center;
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.82);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.85);
+    }
+
+    .vn-trust-bar {
+      position: relative;
+      height: 50px;
+      padding: 4px 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(143, 168, 142, 0.78);
+      background-color: rgba(43, 28, 20, 0.94);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.65);
+      overflow: visible;
+    }
+
+    .vn-trust-icon-box {
+      height: 28px;
+      aspect-ratio: 556 / 818;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    @keyframes vnTrustDeltaFloat {
+      0% { opacity: 0; transform: translateY(6px) scale(0.92); }
+      15% { opacity: 1; transform: translateY(0px) scale(1); }
+      80% { opacity: 1; transform: translateY(-8px) scale(1); }
+      100% { opacity: 0; transform: translateY(-14px) scale(0.96); }
+    }
+
+    .vn-trust-floating-delta {
+      position: absolute;
+      left: 100%;
+      margin-left: 10px;
+      top: 50%;
+      margin-top: -14px;
+      z-index: 80;
+      padding: 4px 10px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 800;
+      white-space: nowrap;
+      pointer-events: none;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.98);
+      animation: vnTrustDeltaFloat 2.35s ease-out forwards;
+    }
+
+    @keyframes vnAchievementSlideIn {
+      0% { opacity: 0; transform: translate(-50%, -130%); }
+      100% { opacity: 1; transform: translate(-50%, 0); }
+    }
+    @keyframes vnAchievementFadeOut {
+      0% { opacity: 1; transform: translate(-50%, 0); }
+      100% { opacity: 0; transform: translate(-50%, -18px); }
+    }
+    @keyframes vnClownToastEntry {
+      0% { opacity: 0; transform: translate(-50%, -130%); }
+      45% { opacity: 1; transform: translate(-50%, 0); }
+      57% { transform: translate(calc(-50% - 9px), 0); }
+      69% { transform: translate(calc(-50% + 9px), 0); }
+      81% { transform: translate(calc(-50% - 6px), 0); }
+      91% { transform: translate(calc(-50% + 5px), 0); }
+      100% { opacity: 1; transform: translate(-50%, 0); }
+    }
+    @keyframes vnWhipFlashPulse {
+      0% { opacity: 0; transform: scale(0.92); }
+      18% { opacity: 1; transform: scale(1.04); }
+      82% { opacity: 1; transform: scale(1); }
+      100% { opacity: 0; transform: scale(1.02); }
+    }
+
+    .vn-ach-toast {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      z-index: 95;
+      width: min(92vw, 520px);
+      border-radius: 12px;
+      border: 2px solid #d4af37;
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      pointer-events: none;
+      overflow: hidden;
+    }
+    .vn-ach-toast.is-honor {
+      background-color: rgba(28, 20, 16, 0.96);
+      border-color: #d4af37;
+      box-shadow: 0 0 0 3px #23160f, 0 0 0 5px rgba(212, 175, 55, 0.72), 0 14px 36px rgba(0, 0, 0, 0.9), 0 0 28px rgba(212, 175, 55, 0.42);
+      animation: vnAchievementSlideIn 0.52s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+    .vn-ach-toast.is-clown {
+      background-color: #2a1010;
+      border-color: #b82929;
+      box-shadow: 0 0 0 3px #1c0909, 0 0 0 5px rgba(184, 41, 41, 0.78), 0 14px 36px rgba(0, 0, 0, 0.92), 0 0 24px rgba(184, 41, 41, 0.42);
+      animation: vnClownToastEntry 0.72s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+    .vn-ach-toast.is-exiting {
+      animation: vnAchievementFadeOut 0.44s ease-in forwards !important;
+    }
+    .vn-plaque-grid {
+      width: 100%;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 14px;
+      text-align: left;
+    }
+    .vn-title-plaque {
+      position: relative;
+      border-radius: 12px;
+      border: 2px solid #d4af37;
+      padding: 14px 14px 32px 14px;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      box-shadow: 0 8px 22px rgba(0, 0, 0, 0.78);
+    }
+    .vn-seal-dadat {
+      position: absolute;
+      bottom: 8px;
+      right: 10px;
+      padding: 2px 6px;
+      border: 2px solid #ef4444;
+      border-radius: 3px;
+      background: rgba(153, 27, 27, 0.32);
+      color: #fecaca;
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: 0.06em;
+      transform: rotate(-4deg);
+    }
+
+    .vn-trust-icon-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+    }
+
+    @keyframes vnToastPop {
+      0% { opacity: 0; transform: translate(-50%, -10px) scale(0.95); }
+      12% { opacity: 1; transform: translate(-50%, 0px) scale(1); }
+      85% { opacity: 1; transform: translate(-50%, 0px) scale(1); }
+      100% { opacity: 0; transform: translate(-50%, -6px) scale(0.98); }
+    }
+
+    .vn-bonus-toast {
+      position: absolute;
+      top: 12px;
+      left: 50%;
+      z-index: 35;
+      padding: 10px 20px;
+      border-radius: 999px;
+      border: 2px solid #e2b866;
+      background-color: rgba(20, 12, 8, 0.94);
+      color: #fde68a;
+      font-size: clamp(12px, 1.25vw, 15px);
+      font-weight: 600;
+      white-space: nowrap;
+      pointer-events: none;
+      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.85);
+      animation: vnToastPop 4.4s ease-out forwards;
     }
 
     /* Top-Right HUD ("Gợi ý" & "Bộ sưu tập", unlocked from Scene 3+) */
@@ -187,6 +356,10 @@
 
     .vn-stage-host.is-shuddering {
       animation: vnSceneShudderShake 0.6s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+    }
+
+    .vn-stage-host.is-shuddering-brief {
+      animation: vnSceneShudderShake 0.38s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
     }
 
     @keyframes vnPasscodeErrorShake {
@@ -559,8 +732,54 @@
       text-align: center;
     }
 
-    /* Scene 4 Placeholder inside Stage (z-index: 25, keeping Top-Right HUD z-index: 30 clickable) */
-    .vn-scene4-overlay {
+    /* Scene 4 Chest Lock Overlay & Scene 5 Prep Overlay */
+    .vn-scene4-lock-overlay {
+      position: absolute;
+      inset: 0;
+      z-index: 20;
+      background-color: rgba(0, 0, 0, 0.74);
+      overflow-y: auto;
+      touch-action: auto;
+    }
+
+    .vn-clue-board {
+      width: 100%;
+      border-radius: 16px;
+      border: 2px solid #d4a853;
+      background: linear-gradient(180deg, #351d11 0%, #1c0e07 100%);
+      box-shadow: 0 0 0 4px #4a2511, 0 18px 40px rgba(0, 0, 0, 0.9), inset 0 0 24px rgba(212, 168, 83, 0.22);
+      padding: 18px 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+
+    .vn-clue-board-chars {
+      font-family: 'Noto Serif', Georgia, serif;
+      font-size: clamp(19px, 2.3vw, 32px);
+      font-weight: 900;
+      color: #FFE49E;
+      letter-spacing: 0.03em;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.95);
+      padding: 6px 0;
+    }
+
+    .vn-deduction-note {
+      width: 100%;
+      border-radius: 12px;
+      border: 1px solid rgba(226, 184, 102, 0.55);
+      background-color: rgba(22, 14, 10, 0.92);
+      padding: 12px 20px;
+      text-align: center;
+      font-size: clamp(12px, 1.2vw, 15px);
+      line-height: 1.55;
+      color: #fef3c7;
+      font-style: italic;
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.75);
+    }
+
+    .vn-scene5-overlay {
       position: absolute;
       inset: 0;
       z-index: 25;
@@ -901,7 +1120,7 @@
 
     .vn-badge-art-wrap {
       width: 100%;
-      aspect-ratio: 598 / 852;
+      height: 170px;
       border-radius: 8px;
       border: 1px solid rgba(212, 175, 55, 0.55);
       background-color: rgba(26, 12, 7, 0.72);
@@ -1154,18 +1373,52 @@
 </head>
 <body style="margin:0;padding:0;background:#120d0a;overflow:hidden;">
   <div id="root">
+    <!-- Top-Sliding Achievement Toast Banner (z-index: 95) -->
+    <div id="achievement-toast-banner" class="vn-ach-toast is-honor" role="status" aria-live="polite" hidden>
+      <svg viewBox="0 0 24 24" style="position:absolute;top:4px;left:4px;width:15px;height:15px;pointer-events:none;" aria-hidden="true"><path d="M2 14 V4 Q2 2 4 2 H14 M6 10 Q6 6 10 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <svg viewBox="0 0 24 24" style="position:absolute;top:4px;right:4px;width:15px;height:15px;transform:scaleX(-1);pointer-events:none;" aria-hidden="true"><path d="M2 14 V4 Q2 2 4 2 H14 M6 10 Q6 6 10 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <svg viewBox="0 0 24 24" style="position:absolute;bottom:4px;left:4px;width:15px;height:15px;transform:scaleY(-1);pointer-events:none;" aria-hidden="true"><path d="M2 14 V4 Q2 2 4 2 H14 M6 10 Q6 6 10 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <svg viewBox="0 0 24 24" style="position:absolute;bottom:4px;right:4px;width:15px;height:15px;transform:scale(-1,-1);pointer-events:none;" aria-hidden="true"><path d="M2 14 V4 Q2 2 4 2 H14 M6 10 Q6 6 10 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <div id="ach-toast-icon-frame" style="width:54px;height:54px;border-radius:999px;border:2px solid #d4af37;display:flex;align-items:center;justify-content:center;flex-shrink:0;"></div>
+      <div style="flex:1 1 auto;min-width:0;display:flex;flex-direction:column;align-items:flex-start;text-align:left;">
+        <span id="ach-toast-cat" style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:0.1em;color:#fbbf24;">Danh hiệu Vinh Dự</span>
+        <h3 id="ach-toast-title" style="font-family:'Noto Serif',Georgia,serif;font-size:17px;font-weight:700;color:#FFF6D6;margin-top:2px;">Bậc Thầy Nhập Thế</h3>
+        <p id="ach-toast-desc" style="font-size:12.5px;color:#e7e5e4;line-height:1.4;margin-top:2px;"></p>
+      </div>
+    </div>
+
     <!-- Loading Screen -->
     <div id="loading-screen">
       <div style="font-family:'Noto Serif',Georgia,serif;font-size:26px;font-weight:700;margin-bottom:8px;">Hậu Lê Phiêu Lưu Ký </div>
       <div style="font-size:14px;color:#a8a29e;">Đang khởi tạo tài nguyên...</div>
     </div>
 
-    <!-- Dedicated Top HUD Bar (z-index: 30) -->
+    <!-- Dedicated Top HUD Bar (z-index: 44) -->
     <div id="scene-topbar" class="vn-topbar" hidden>
-      <div class="vn-topbar-left">
+      <div class="vn-topbar-left" style="overflow:visible;">
         <button id="open-menu-btn" type="button" class="vn-btn vn-menu-top-btn" aria-label="Mở Menu Trò Chơi">
           <span>Menu</span>
         </button>
+
+        <div id="hud-trust-bar" class="vn-trust-bar" title="Điểm Tín Nhiệm (Chiếc trâm cài)" hidden>
+          <div class="vn-trust-icon-box">
+            <img id="img-hud-tramcai" alt="Chiếc trâm cài" />
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:flex-start;justify-content:center;line-height:1.15;">
+            <div style="display:flex;align-items:center;gap:4px;">
+              <span style="font-size:10px;font-weight:600;color:#a7f3d0;white-space:nowrap;">Tín nhiệm</span>
+              <span id="hud-jade-shield-dot" title="Trâm Ngọc Bích đang kích hoạt" style="width:7px;height:7px;border-radius:999px;background:#34d399;box-shadow:0 0 6px #34d399;" hidden></span>
+            </div>
+            <div style="display:flex;align-items:center;gap:6px;margin-top:3px;">
+              <div style="width:48px;height:7px;border-radius:999px;background:#1c1917;border:1px solid rgba(52,211,153,0.4);overflow:hidden;">
+                <div id="hud-trust-fill" style="width:25%;height:100%;background:linear-gradient(90deg,#34d399,#fcd34d);border-radius:999px;"></div>
+              </div>
+              <span id="hud-trust-val" style="font-size:12px;font-weight:800;color:#ffffff;">1</span>
+            </div>
+          </div>
+          <div id="trust-floating-delta" class="vn-trust-floating-delta" hidden></div>
+        </div>
+
         <div id="scene-indicator-wrap" class="vn-scene-indicator">
           <span id="scene-badge-label" class="vn-scene-badge">Cảnh 1</span>
           <span style="color:#78716c;">•</span>
@@ -1173,12 +1426,12 @@
         </div>
       </div>
 
-      <!-- VERY TOP-CENTER PUZZLE PROMPT (Scene 3 Phase 2) -->
+      <!-- VERY TOP-CENTER PUZZLE PROMPT (Scene 3 & Scene 4 Puzzle Phases) -->
       <div id="topcenter-puzzle-wrap" class="vn-topcenter-puzzle-wrap" hidden>
-        <div class="vn-topcenter-puzzle-pill">Theo bài vè cổ, hiện tại đang là năm bao nhiêu? (Nhập 4 chữ số)</div>
+        <div id="topcenter-puzzle-pill" class="vn-topcenter-puzzle-pill">Theo bài vè cổ, hiện tại đang là năm bao nhiêu? (Nhập 4 chữ số)</div>
       </div>
 
-      <!-- Top-Right HUD ("Gợi ý" & "Bộ sưu tập", unlocked from Scene 3+) -->
+      <!-- Top-Right HUD ("Gợi ý" + "Bộ sưu tập") -->
       <div id="topright-hud" class="vn-topright-hud" hidden>
         <button id="btn-hud-hint" type="button" class="vn-btn vn-hud-icon-btn" aria-label="Gợi ý">
           <div class="vn-hud-icon-box">
@@ -1198,12 +1451,19 @@
 
     <!-- Main 16:9 Visual Novel Stage -->
     <div id="stage-host" class="vn-stage-host">
+      <!-- Non-blocking +2 Knowledge Candles Bonus Toast (Scene 4 Line 2) -->
+      <div id="scene4-bonus-toast" class="vn-bonus-toast" role="status" hidden>
+        <span>Che giấu thành công! Nhận được: Nến Tri Thức </span><strong style="color:#FFFFFF;font-weight:800;">+2</strong>
+      </div>
+
       <div id="stage-box" class="vn-stage-box">
         <canvas id="vn-canvas" width="1376" height="768"></canvas>
 
-        <!-- Strictly hidden character markers in DOM when unused (`display:none`) -->
+        <!-- Strictly hidden character markers in DOM for all non-speaking characters & puzzle phases (`display:none`) -->
         <div id="quan-gia-dom-marker" data-character="sprite_quan_gia_lam" hidden style="display:none;"></div>
         <div id="lien-dom-marker" data-character="sprite_lien_hoodie" hidden style="display:none;"></div>
+        <div id="lien-nausong-dom-marker" data-character="sprite_lien_nausong" hidden style="display:none;"></div>
+        <div id="thiman-dom-marker" data-character="sprite_thiman" hidden style="display:none;"></div>
 
         <!-- Scene 3 Phase 1 ('dialogue'): Center Dó Paper cleanly visible above bottom Dialogue Box -->
         <div id="scene3-phase1-paper" class="vn-scene3-phase1-paper" hidden>
@@ -1298,18 +1558,137 @@
         </div>
       </div>
 
-      <!-- Scene 4 Preparation Placeholder ("Chuyển sang Cảnh 4", z-index: 25) -->
-      <div id="scene4-placeholder" class="vn-scene4-overlay" hidden>
+      <!-- Scene 4 Part 2 ('puzzle'): Engraved Chinese Character Clue Board + Deduction Note + 5-Digit Input -->
+      <div id="scene4-lock-overlay" class="vn-scene4-lock-overlay" hidden>
+        <div class="vn-scene3-spacer" style="padding:10px 24px;">
+          <div class="vn-scene3-stack" style="max-width:680px;gap:12px;">
+            <div class="vn-clue-board">
+              <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;color:#fbbf24;margin-bottom:6px;">Bảng Khắc Chữ Hán Trên Nắp Rương</div>
+              <div class="vn-clue-board-chars">1. 信  —  2. 禮  —  3. 仁  —  4. 智  —  5. 義</div>
+            </div>
+
+            <div class="vn-deduction-note">
+              Thời vua Lê Thánh Tông độc tôn Nho giáo, coi trọng kỷ cương phép tắc. Thứ tự chuẩn của Ngũ Thường trong đạo Nho là: Nhân – Nghĩa – Lễ – Trí – Tín! Giờ phải nhận mặt từng chữ Hán đánh số trên kia rồi...
+            </div>
+
+            <div id="scene4-passcode-row" class="vn-passcode-row">
+              <input id="scene4-passcode-input" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="5" placeholder="_ _ _ _ _" aria-label="Mật mã 5 chữ số Ngũ Thường" class="vn-passcode-input" style="width:166px;letter-spacing:0.28em;" />
+              <button id="btn-scene4-confirm" type="button" class="vn-btn vn-gold-action-btn" style="padding:10px 22px;">
+                <span>Xác nhận</span>
+              </button>
+              <button id="btn-scene4-put-away" type="button" class="vn-btn vn-back-btn" style="padding:10px 22px;">
+                <span>Cất</span>
+              </button>
+            </div>
+
+            <p id="scene4-passcode-err" class="vn-passcode-err" role="alert" hidden></p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Scene 5: 3 Robe Choices over `nencanh5_ruongao` -->
+      <div id="scene5-robe-choices" class="vn-scene2-menu-overlay" hidden>
+        <div class="vn-scene2-menu-spacer">
+          <div class="vn-scene2-menu-stack" style="margin-top:auto;margin-bottom:18px;">
+            <button id="btn-s5-robe-1" type="button" class="vn-btn vn-darkred-btn">
+              <span>Mặc áo lụa vàng nghệ, viền gấm</span>
+            </button>
+            <button id="btn-s5-robe-2" type="button" class="vn-btn vn-darkred-btn">
+              <span>Mặc áo vải sa đỏ tía, ống tay rộng</span>
+            </button>
+            <button id="btn-s5-robe-3" type="button" class="vn-btn vn-darkred-btn">
+              <span>Mặc áo vải gai thô màu nâu sồng, ống tay hẹp</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Scene 5: Dramatic Whip Flash (~1.3s) -->
+      <div id="scene5-whip-flash" style="position:absolute;inset:0;z-index:38;background:#000000;display:flex;align-items:center;justify-content:center;padding:0 32px;text-align:center;" hidden>
+        <h2 style="font-family:'Noto Serif',Georgia,serif;font-size:clamp(26px,3.6vw,48px);font-weight:900;color:#FF2A2A;text-shadow:0 0 24px rgba(255,36,36,0.85);animation:vnWhipFlashPulse 1.3s ease-out forwards;">Tiếng roi vút lên trong gió</h2>
+      </div>
+
+      <!-- Scene 5: Pure Black Game Over Screen -->
+      <div id="scene5-gameover-screen" style="position:absolute;inset:0;z-index:38;background:#000000;overflow-y:auto;touch-action:auto;" hidden>
+        <div class="vn-overlay-spacer">
+          <div style="margin:auto;width:100%;max-width:680px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:18px;">
+            <h2 id="s5-gameover-header" style="font-family:'Noto Serif',Georgia,serif;font-size:clamp(20px,2.4vw,30px);font-weight:900;color:#FF3B3B;line-height:1.35;"></h2>
+            <div id="s5-gameover-bullets" style="width:100%;display:flex;flex-direction:column;gap:12px;text-align:left;color:#ffffff;font-size:clamp(14px,1.3vw,17px);line-height:1.62;"></div>
+            <button id="btn-s5-rewind" type="button" class="vn-btn vn-gold-action-btn" style="margin-top:6px;">
+              <span>Quay ngược thời gian</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Scene 5: Second Pure Black Humorous Rewind Screen (-5 Trust) -->
+      <div id="scene5-rewind-screen" style="position:absolute;inset:0;z-index:38;background:#000000;overflow-y:auto;touch-action:auto;" hidden>
+        <div class="vn-overlay-spacer">
+          <div style="margin:auto;width:100%;max-width:600px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:22px;">
+            <p style="color:#ffffff;font-size:clamp(16px,1.7vw,22px);font-weight:700;line-height:1.55;">Đau mông chưa bạn ơi? Sách giáo khoa Lịch sử chắc bạn dùng để úp mì tôm đúng không? :))</p>
+            <button id="btn-s5-retry" type="button" class="vn-btn vn-gold-action-btn">
+              <span>Thử lại Cảnh 5</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Scene 5: Celebratory Reward View -->
+      <div id="scene5-reward-screen" style="position:absolute;inset:0;z-index:38;background:rgba(0,0,0,0.84);overflow-y:auto;touch-action:auto;" hidden>
+        <div class="vn-overlay-spacer">
+          <div class="vn-modal-card" style="max-width:680px;border-color:#D4AF37;">
+            <div style="display:flex;flex-wrap:wrap;align-items:stretch;justify-content:center;gap:14px;">
+              <button id="btn-s5-rew-phucsac" type="button" class="vn-btn vn-badge-card" style="width:162px;">
+                <div class="vn-badge-art-wrap" style="height:148px;">
+                  <img id="img-s5-rew-phucsac" alt="Cẩm Nang Phục Sắc Đại Việt" />
+                </div>
+                <span class="vn-badge-card-title">Cẩm Nang Phục Sắc Đại Việt</span>
+              </button>
+
+              <button id="btn-s5-rew-thebai" type="button" class="vn-btn vn-badge-card" style="width:162px;">
+                <div class="vn-badge-art-wrap" style="height:148px;">
+                  <img id="img-s5-rew-thebai" alt="Thẻ Bài Gia Nhân Phủ Quan" />
+                </div>
+                <span class="vn-badge-card-title">Thẻ Bài Gia Nhân Phủ Quan</span>
+              </button>
+
+              <button id="btn-s5-rew-tramngoc" type="button" class="vn-btn vn-badge-card" style="width:162px;" hidden>
+                <div class="vn-badge-art-wrap" style="height:148px;">
+                  <img id="img-s5-rew-tramngoc" alt="Chiếc Trâm Cài Ngọc Bích" />
+                </div>
+                <span class="vn-badge-card-title">Chiếc Trâm Cài Ngọc Bích</span>
+              </button>
+            </div>
+
+            <p style="margin-top:14px;font-size:17px;font-weight:700;color:#ffffff;text-align:center;">Đã được đặt trong Bộ sưu tập</p>
+            <button id="btn-s5-rew-detail-link" type="button" class="vn-btn" style="margin-top:2px;padding:6px 14px;background:transparent;border:none;color:#f87171;font-size:15px;font-weight:700;text-decoration:underline;text-underline-offset:4px;">
+              <span>Ấn vào để xem chi tiết</span>
+            </button>
+
+            <div style="margin-top:8px;width:100%;padding:10px 14px;border-radius:12px;border:1px solid rgba(143,168,142,0.7);background:rgba(22,36,28,0.85);text-align:center;font-size:13px;font-weight:600;color:#d1fae5;">
+              <span>Nhận +5 Tín nhiệm &amp; Thẻ Bài Gia Nhân Phủ Quan</span>
+              <span id="s5-rew-jade-note" style="display:block;color:#fde68a;margin-top:4px;" hidden>Mở khóa bảo vật ẩn: Chiếc Trâm Cài Ngọc Bích (Chặn 1 lần trừ Tín nhiệm)</span>
+            </div>
+
+            <button id="btn-s5-finish" type="button" class="vn-btn vn-modal-btn primary" style="margin-top:14px;">
+              <span>Khép nắp rương lại, bước ra bàn chuẩn bị lễ vật cùng Thị Mận</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Scene 6 Preparation Screen (after completing Scene 5) -->
+      <div id="scene5-prep-screen" class="vn-scene5-overlay" hidden>
         <div class="vn-overlay-spacer">
           <div class="vn-modal-card" style="border-color:#d4a853;">
-            <div class="vn-victory-pill">Hoàn thành Cảnh 3</div>
-            <h1 class="vn-modal-title" style="font-size:clamp(26px,2.8vw,36px);margin-bottom:12px;">Chuyển sang Cảnh 4</h1>
-            <p class="vn-victory-desc">Bí ẩn niên đại Hồng Đức năm thứ 15 (1484) đã được khai mở! Huy hiệu <strong>Bia Tiến Sĩ Khoa Nhâm Tuất</strong> đã nằm gọn trong Bộ sưu tập. Hành trình tìm kiếm ba Ấn Tín sẽ tiếp tục trong Cảnh 4!</p>
+            <div class="vn-victory-pill">Hoàn thành Cảnh 5</div>
+            <h1 class="vn-modal-title" style="font-size:clamp(24px,2.5vw,32px);margin-bottom:12px;">Sẵn sàng tiến vào Cảnh 6</h1>
+            <p class="vn-victory-desc">Liên đã khoác lên bộ áo Giao Lĩnh nâu sồng đúng chuẩn gia nhân, cất giữ <strong>Thẻ Bài Gia Nhân Phủ Quan</strong> và <strong>Cẩm Nang Phục Sắc Đại Việt</strong>. Hãy đón chờ màn chuẩn bị lễ vật cùng Thị Mận ở Cảnh 6!</p>
             <div class="vn-modal-stack">
-              <button id="btn-scene4-home" type="button" class="vn-btn vn-modal-btn primary">
+              <button id="btn-scene5-home" type="button" class="vn-btn vn-modal-btn primary">
                 <span>Quay về Màn hình Bắt đầu</span>
               </button>
-              <button id="btn-scene4-replay" type="button" class="vn-btn vn-modal-btn">
+              <button id="btn-scene5-replay" type="button" class="vn-btn vn-modal-btn">
                 <span>Chơi lại từ Cảnh 1</span>
               </button>
             </div>
@@ -1322,6 +1701,10 @@
     <div id="scene-bottombar" class="vn-bottombar" hidden>
       <button id="scene1-choice-btn" type="button" class="vn-btn vn-choice-btn" hidden>
         <span id="scene1-choice-label">Lồm cồm đứng dậy khỏi ổ rơm, phủi bụi trên vạt áo</span>
+      </button>
+
+      <button id="scene4-run-chest-btn" type="button" class="vn-btn vn-gold-action-btn" hidden>
+        <span>Chạy xuống chỗ chiếc rương</span>
       </button>
 
       <button id="mobile-next-btn" type="button" class="vn-btn vn-mobile-next-btn" hidden aria-label="Tiếp tục thoại">
@@ -1345,14 +1728,18 @@
       <button id="scene3-reopen-paper-btn" type="button" class="vn-btn vn-gold-action-btn" hidden>
         <span>Mở tờ giấy</span>
       </button>
+
+      <button id="scene4-reopen-lock-btn" type="button" class="vn-btn vn-gold-action-btn" hidden>
+        <span>Mở bảng khóa</span>
+      </button>
     </div>
 
-    <!-- Scene 3 Phase 3: Historical Explanation Modal (z-index: 40) -->
-    <div id="scene3-explanation-modal" class="vn-overlay-scroll" style="z-index:40;background:rgba(0,0,0,0.84);" role="dialog" aria-modal="true" aria-label="Giải thích lịch sử 1484" hidden>
+    <!-- Historical Explanation Modal (Scene 3 `1484` & Scene 4 `35241`, z-index: 40) -->
+    <div id="scene3-explanation-modal" class="vn-overlay-scroll" style="z-index:40;background:rgba(0,0,0,0.84);" role="dialog" aria-modal="true" aria-label="Giải thích lịch sử" hidden>
       <div class="vn-overlay-spacer">
         <div class="vn-modal-card" style="max-width:540px;background-color:#050404;border-color:#D4AF37;box-shadow:0 0 36px 14px rgba(0,0,0,0.92),inset 0 0 18px rgba(212,175,55,0.14);">
-          <h2 style="font-family:'Noto Serif',Georgia,serif;font-size:clamp(20px,2.2vw,28px);font-weight:700;color:#FFD700;text-align:center;margin-bottom:14px;">Chính xác! Đáp án: 1484</h2>
-          <p style="font-size:clamp(14px,1.35vw,17px);line-height:1.65;color:#ffffff;text-align:center;margin-bottom:22px;">Giải thích: Vua Lê Thánh Tông có 2 niên hiệu: Quang Thuận từ 1460–1469 và Hồng Đức từ 1470–1497. Năm Hồng Đức thứ 15 là 1470 + 14 = 1484, cũng là năm dựng bia Tiến sĩ đầu tiên tại Văn Miếu.</p>
+          <h2 id="explanation-modal-title" style="font-family:'Noto Serif',Georgia,serif;font-size:clamp(20px,2.2vw,28px);font-weight:700;color:#FFD700;text-align:center;margin-bottom:14px;">Chính xác! Đáp án: 1484</h2>
+          <p id="explanation-modal-body" style="font-size:clamp(14px,1.35vw,17px);line-height:1.65;color:#ffffff;text-align:center;margin-bottom:22px;">Giải thích: Vua Lê Thánh Tông có 2 niên hiệu: Quang Thuận từ 1460–1469 và Hồng Đức từ 1470–1497. Năm Hồng Đức thứ 15 là 1470 + 14 = 1484, cũng là năm dựng bia Tiến sĩ đầu tiên tại Văn Miếu.</p>
           <button id="btn-scene3-claim-reward" type="button" class="vn-btn vn-modal-btn primary" style="font-size:16px;">
             <span>Nhận phần thưởng</span>
           </button>
@@ -1364,11 +1751,11 @@
     <div id="reward-popup-modal" class="vn-overlay-scroll" style="z-index:40;background:rgba(0,0,0,0.84);" role="dialog" aria-modal="true" aria-label="Phần thưởng huy hiệu lịch sử" hidden>
       <div class="vn-overlay-spacer">
         <div class="vn-modal-card" style="border-color:#D4AF37;">
-          <button id="btn-reward-badge-card" type="button" class="vn-btn vn-badge-card" aria-label="Xem chi tiết Bia Tiến Sĩ Khoa Nhâm Tuất">
+          <button id="btn-reward-badge-card" type="button" class="vn-btn vn-badge-card" aria-label="Xem chi tiết huy hiệu">
             <div class="vn-badge-art-wrap">
-              <img id="img-reward-badge" alt="Bia Tiến Sĩ Khoa Nhâm Tuất" />
+              <img id="img-reward-badge" alt="Huy hiệu lịch sử" />
             </div>
-            <span class="vn-badge-card-title">Bia Tiến Sĩ Khoa Nhâm Tuất</span>
+            <span id="reward-badge-title" class="vn-badge-card-title">Bia Tiến Sĩ Khoa Nhâm Tuất</span>
           </button>
 
           <p style="margin-top:16px;font-size:17px;font-weight:700;color:#ffffff;text-align:center;">Đã được đặt trong Bộ sưu tập</p>
@@ -1377,8 +1764,13 @@
             <span>Ấn vào để xem chi tiết</span>
           </button>
 
+          <div id="reward-trust-unlock-banner" style="margin-top:8px;width:100%;padding:10px 14px;border-radius:12px;border:1px solid rgba(143,168,142,0.7);background:rgba(22,36,28,0.85);display:flex;align-items:center;justify-content:center;gap:10px;" hidden>
+            <img id="img-reward-tramcai" alt="Chiếc trâm cài" style="height:26px;width:auto;object-fit:contain;" />
+            <span style="font-size:13px;font-weight:600;color:#d1fae5;">Đã mở khóa thanh Điểm Tín Nhiệm (Chiếc trâm cài) +1</span>
+          </div>
+
           <button id="btn-reward-continue" type="button" class="vn-btn vn-modal-btn primary" style="margin-top:14px;">
-            <span>Tiếp tục</span>
+            <span id="reward-continue-label">Tiếp tục</span>
           </button>
         </div>
       </div>
@@ -1441,20 +1833,76 @@
 
           <button id="btn-close-collection-overlay" type="button" class="vn-btn vn-nen-popup-close" aria-label="Đóng Bộ sưu tập">X</button>
 
-          <div style="position:relative;z-index:10;width:100%;display:flex;flex-direction:column;align-items:center;text-align:center;gap:16px;">
+          <div style="position:relative;z-index:10;width:100%;display:flex;flex-direction:column;align-items:center;text-align:center;gap:14px;">
             <h2 class="vn-modal-title" style="margin-bottom:0;text-shadow:0 2px 8px rgba(0,0,0,0.95);">Bộ sưu tập</h2>
 
-            <div id="collection-empty-msg" style="padding:26px 20px;border-radius:12px;background:rgba(0,0,0,0.55);border:1px solid rgba(180,83,9,0.45);max-width:440px;">
-              <p style="font-size:15px;color:#e7e5e4;line-height:1.6;">Chưa có huy hiệu lịch sử nào được mở khóa. Hãy giải mã các manh mối trong hành trình để thu thập huy hiệu!</p>
+            <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:10px;">
+              <button id="btn-col-tab-items" type="button" class="vn-btn vn-modal-btn primary" style="width:auto;padding:8px 18px;">
+                <span>Huy hiệu &amp; Vật phẩm</span>
+              </button>
+              <button id="btn-col-tab-titles" type="button" class="vn-btn vn-modal-btn" style="width:auto;padding:8px 18px;">
+                <span>Danh hiệu</span>
+              </button>
             </div>
 
-            <div id="collection-grid" style="display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:16px;" hidden>
-              <button id="btn-collection-biatiensi" type="button" class="vn-btn vn-badge-card" aria-label="Xem chi tiết Bia Tiến Sĩ Khoa Nhâm Tuất">
-                <div class="vn-badge-art-wrap">
-                  <img id="img-collection-biatiensi" alt="Bia Tiến Sĩ Khoa Nhâm Tuất" />
-                </div>
-                <span class="vn-badge-card-title">Bia Tiến Sĩ Khoa Nhâm Tuất</span>
-              </button>
+            <div id="collection-items-view" style="width:100%;display:flex;flex-direction:column;align-items:center;">
+              <div id="collection-empty-msg" style="padding:26px 20px;border-radius:12px;background:rgba(0,0,0,0.55);border:1px solid rgba(180,83,9,0.45);max-width:440px;">
+                <p style="font-size:15px;color:#e7e5e4;line-height:1.6;">Chưa có huy hiệu hay vật phẩm nào được mở khóa. Hãy giải mã các manh mối trong hành trình để thu thập!</p>
+              </div>
+
+              <div id="collection-grid" style="display:flex;flex-wrap:wrap;align-items:stretch;justify-content:center;gap:14px;" hidden>
+                <button id="btn-collection-biatiensi" type="button" class="vn-btn vn-badge-card" aria-label="Xem chi tiết Bia Tiến Sĩ Khoa Nhâm Tuất">
+                  <div class="vn-badge-art-wrap">
+                    <img id="img-collection-biatiensi" alt="Bia Tiến Sĩ Khoa Nhâm Tuất" />
+                  </div>
+                  <span class="vn-badge-card-title">Bia Tiến Sĩ Khoa Nhâm Tuất</span>
+                </button>
+
+                <button id="btn-collection-giahuanca" type="button" class="vn-btn vn-badge-card" aria-label="Xem chi tiết Gia Huấn Ca Của Bậc Nho Sĩ" hidden>
+                  <div class="vn-badge-art-wrap">
+                    <img id="img-collection-giahuanca" alt="Gia Huấn Ca Của Bậc Nho Sĩ" />
+                  </div>
+                  <span class="vn-badge-card-title">Gia Huấn Ca Của Bậc Nho Sĩ</span>
+                </button>
+
+                <button id="btn-collection-phucsac" type="button" class="vn-btn vn-badge-card" aria-label="Xem chi tiết Cẩm Nang Phục Sắc Đại Việt" hidden>
+                  <div class="vn-badge-art-wrap">
+                    <img id="img-collection-phucsac" alt="Cẩm Nang Phục Sắc Đại Việt" />
+                  </div>
+                  <span class="vn-badge-card-title">Cẩm Nang Phục Sắc Đại Việt</span>
+                </button>
+
+                <button id="btn-collection-thebai" type="button" class="vn-btn vn-badge-card" aria-label="Xem chi tiết Thẻ Bài Gia Nhân Phủ Quan" hidden>
+                  <div class="vn-badge-art-wrap">
+                    <img id="img-collection-thebai" alt="Thẻ Bài Gia Nhân Phủ Quan" />
+                  </div>
+                  <span class="vn-badge-card-title">Thẻ Bài Gia Nhân Phủ Quan</span>
+                </button>
+
+                <button id="btn-collection-tramngoc" type="button" class="vn-btn vn-badge-card" aria-label="Xem chi tiết Chiếc Trâm Cài Ngọc Bích" hidden>
+                  <div class="vn-badge-art-wrap">
+                    <img id="img-collection-tramngoc" alt="Chiếc Trâm Cài Ngọc Bích" />
+                  </div>
+                  <span class="vn-badge-card-title">Chiếc Trâm Cài Ngọc Bích</span>
+                </button>
+              </div>
+            </div>
+
+            <div id="collection-titles-view" style="width:100%;border-radius:12px;border:2px solid #b68945;background:rgba(24,14,10,0.94);padding:16px;display:flex;flex-direction:column;align-items:center;gap:14px;" hidden>
+              <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:10px;">
+                <button id="btn-subtab-honor" type="button" class="vn-btn vn-modal-btn" style="width:auto;padding:8px 14px;font-size:13px;">
+                  <span>Bảng Vàng Công Trạng</span>
+                </button>
+                <button id="btn-subtab-clown" type="button" class="vn-btn vn-modal-btn" style="width:auto;padding:8px 14px;font-size:13px;">
+                  <span>Góc Tấu Hài Phủ Quan</span>
+                </button>
+              </div>
+
+              <div id="titles-empty-msg" style="padding:36px 16px;text-align:center;">
+                <p style="color:#E8D399;font-style:italic;font-size:15px;">Hành trình vừa mới bắt đầu... Hiện chưa ghi nhận dấu ấn nào.</p>
+              </div>
+
+              <div id="titles-plaque-grid" class="vn-plaque-grid" hidden></div>
             </div>
           </div>
         </div>
@@ -1586,7 +2034,7 @@
           <div class="vn-howto-list">
             <p><strong>• Chuột / Cảm ứng:</strong> Nhấp chuột trái hoặc chạm vào khung thoại để hiện trọn vẹn câu đang chạy chữ hoặc chuyển sang câu thoại kế tiếp.</p>
             <p><strong>• Khám phá Cảnh 2:</strong> Kiểm tra lần lượt cả 3 điểm khả nghi (A), (B), (C) trong kho để khám phá tờ giấy dó bí ẩn.</p>
-            <p><strong>• Giải mã &amp; Gợi ý Cảnh 3:</strong> Đọc bài vè trên tờ giấy dó để tìm năm lịch sử gồm 4 chữ số. Dùng <strong>Ngọn Nến Tri Thức</strong> ở mục <strong>Gợi ý</strong> hoặc trả lời câu hỏi lịch sử để tích lũy thêm nến!</p>
+            <p><strong>• Giải mã &amp; Gợi ý:</strong> Quan sát kỹ bài vè cổ (Cảnh 3) và bảng khóa chữ Hán Ngũ Thường trên rương gỗ (Cảnh 4). Ở Cảnh 4–8, bạn có tối đa 6 lượt gợi ý (3 lượt đầu tốn 1 nến, 3 lượt sau tốn 2 nến) và có thể tích lũy thêm <strong>Ngọn Nến Tri Thức</strong> qua phần câu hỏi Đúng / Sai!</p>
           </div>
           <button id="btn-close-howto" type="button" class="vn-btn vn-modal-btn primary">
             <span>Đóng</span>
@@ -1635,8 +2083,9 @@
         2: { key: 'nencanh2', alias: 'Scene2_Background', url: 'assets/images/nencanh2.png', width: 1376, height: 768, preload: true },
         3: { key: 'nencanh2', alias: 'Scene3_Background', url: 'assets/images/nencanh2.png', width: 1376, height: 768, preload: true },
         4: { key: 'nencanh2', alias: 'Scene4_Background', url: 'assets/images/nencanh2.png', width: 1376, height: 768, preload: true },
-        5: { key: 'nencanh5', alias: 'Scene5_Background', url: 'assets/images/nencanh5.png', width: 1376, height: 768, preload: false },
-        6: { key: 'nencanh6', alias: 'Scene6_Background', url: 'assets/images/nencanh6.png', width: 1376, height: 768, preload: false },
+        '4_ruong': { key: 'nencanh4_ruong', alias: 'Scene4_Ruong_Background', url: 'assets/images/nencanh4_ruong.png', width: 1376, height: 768, preload: true },
+        5: { key: 'nencanh5_ruongao', alias: 'Scene5_RuongAo_Background', url: 'assets/images/nencanh5_ruongao.png', width: 1376, height: 768, preload: true },
+        6: { key: 'nencanh5_ruongao', alias: 'Scene6_Prep_Background', url: 'assets/images/nencanh5_ruongao.png', width: 1376, height: 768, preload: true },
         7: { key: 'nencanh7', alias: 'Scene7_Background', url: 'assets/images/nencanh7.png', width: 1376, height: 768, preload: false }
       };
 
@@ -1669,8 +2118,16 @@
           id: 'sprite_quan_gia_lam',
           alias: 'Sprite_QuanGiaLam',
           url: userAssets.Sprite_QuanGiaLam || userAssets.sprite_quan_gia_lam || 'assets/images/sprite_quan_gia_lam.png',
-          width: 548,
-          height: 986,
+          width: 991,
+          height: 1009,
+          chromaKey: true
+        },
+        sprite_thiman: {
+          id: 'sprite_thiman',
+          alias: 'Sprite_ThiMan',
+          url: userAssets.Sprite_ThiMan || userAssets.sprite_thiman || 'assets/images/sprite_thiman.png',
+          width: 441,
+          height: 925,
           chromaKey: true
         },
         dialogue_box_frame: {
@@ -1685,8 +2142,8 @@
           id: 'giaydo_baive',
           alias: 'GiayDo_BaiVe',
           url: userAssets.GiayDo_BaiVe || userAssets.giaydo_baive || 'assets/images/giaydo_baive.png',
-          width: 628,
-          height: 860,
+          width: 596,
+          height: 844,
           chromaKey: true
         },
         icon_goiy: {
@@ -1705,6 +2162,14 @@
           height: 466,
           chromaKey: true
         },
+        icon_tramcai: {
+          id: 'icon_tramcai',
+          alias: 'Icon_TramCai',
+          url: userAssets.Icon_TramCai || userAssets.icon_tramcai || 'assets/images/icon_tramcai.png',
+          width: 645,
+          height: 568,
+          chromaKey: true
+        },
         nen_popup: {
           id: 'nen_popup',
           alias: 'Nen_Popup',
@@ -1719,6 +2184,54 @@
           url: userAssets.HuyHieu_BiaTienSi || userAssets.huyhieu_biatiensi || 'assets/images/huyhieu_biatiensi.png',
           width: 598,
           height: 852,
+          chromaKey: true
+        },
+        huyhieu_giahuanca: {
+          id: 'huyhieu_giahuanca',
+          alias: 'HuyHieu_GiaHuanCa',
+          url: userAssets.HuyHieu_GiaHuanCa || userAssets.huyhieu_giahuanca || 'assets/images/huyhieu_giahuanca.png',
+          width: 1024,
+          height: 1024,
+          chromaKey: false
+        },
+        nencanh5_ruongao: {
+          id: 'nencanh5_ruongao',
+          alias: 'Scene5_RuongAo_Background',
+          url: userAssets.Scene5_RuongAo_Background || userAssets.nencanh5_ruongao || 'assets/images/nencanh5_ruongao.png',
+          width: 1376,
+          height: 768,
+          chromaKey: false
+        },
+        sprite_lien_nausong: {
+          id: 'sprite_lien_nausong',
+          alias: 'Sprite_Lien_NauSong',
+          url: userAssets.Sprite_Lien_NauSong || userAssets.sprite_lien_nausong || 'assets/images/sprite_lien_nausong.png',
+          width: 349,
+          height: 953,
+          chromaKey: true
+        },
+        huyhieu_phucsac: {
+          id: 'huyhieu_phucsac',
+          alias: 'HuyHieu_PhucSac',
+          url: userAssets.HuyHieu_PhucSac || userAssets.huyhieu_phucsac || 'assets/images/huyhieu_phucsac.png',
+          width: 683,
+          height: 485,
+          chromaKey: true
+        },
+        item_thebai: {
+          id: 'item_thebai',
+          alias: 'Item_TheBai',
+          url: userAssets.Item_TheBai || userAssets.item_thebai || 'assets/images/item_thebai.png',
+          width: 241,
+          height: 761,
+          chromaKey: true
+        },
+        item_tramngocbich: {
+          id: 'item_tramngocbich',
+          alias: 'Item_TramNgocBich',
+          url: userAssets.Item_TramNgocBich || userAssets.item_tramngocbich || 'assets/images/item_tramngocbich.png',
+          width: 484,
+          height: 748,
           chromaKey: true
         }
       };
@@ -1856,11 +2369,183 @@
         }
       ];
 
-      var SCENE_3_HINTS = [
-        'Thời gian không nằm ở những lời than vãn đầu bài vè. Hãy chú ý đến hai câu nhắc về sự hưng thịnh của triều đại và một công trình lưu danh người đỗ đạt tại kinh thành.',
-        "Vị minh quân trị vì 38 năm này từng dùng hai niên hiệu. Hãy xác định niên hiệu thứ hai của ngài bắt đầu khi nào, và sự kiện 'sử xanh khắc bia' đầu tiên diễn ra vào năm thứ bao nhiêu của niên hiệu đó.",
-        'Năm đầu tiên của một niên hiệu luôn được tính là năm thứ nhất (nguyên niên), không phải năm thứ không. Hãy lấy mốc năm bắt đầu niên hiệu thứ hai cộng thêm khoảng cách chênh lệch thực tế đến năm thứ mười lăm.'
+      var SCENE_4_PART_1_SCRIPT = [
+        {
+          id: 401,
+          speaker: 'Thị Mận',
+          spriteId: 'sprite_thiman',
+          action: '[Vừa nhìn thấy Liên đang đứng trong góc kho, mắt cô bé mở to đầy kinh hãi, suýt bật tiếng kêu rồi vội lấy tay bịt miệng lại]',
+          dialogue: '"Trời đất ơi... Tỷ Liên! Tỷ... tỷ lấy đâu ra thứ y phục quái dị, tay áo phồng to như cái bao bố mà lại không có vạt chéo thế kia !? , sau gáy lại lùng bùng cái mũ trùm đầu chẳng khác nào thích khách ! Hôm qua t... tỷ ngủ say trong kho đâu…đ..âu có mặc thứ này!"',
+          screenShakeMs: 600
+        },
+        {
+          id: 402,
+          speaker: 'Liên',
+          spriteId: 'sprite_lien_hoodie',
+          action: '[Giật mình nhìn xuống chiếc áo hoodie trên người, luống cuống kéo mũ áo xuống che bớt]',
+          dialogue: '"À... ừm...ờ cái… cái này là... á…áo chống rét ở quê chị mới gửi lên! Mà khoan, nhìn em mặt mày tái mét, mắt đỏ hoe thế kia, có chuyện gì xảy ra à?"',
+          screenShakeMs: 380,
+          candleBonus: 2
+        },
+        {
+          id: 403,
+          speaker: 'Thị Mận',
+          spriteId: 'sprite_thiman',
+          action: '[Cúi gằm mặt, hai tay bấu chặt vạt áo nâu bạc màu, giọng run rẩy nức nở]',
+          dialogue: '"Tỷ mau cởi thứ áo kỳ quặc đó ra đi, Quản gia Lâm mà nhìn thấy lại tưởng tỷ bị yêu ma nhập xác, lôi ra đình làng phạt vạ bây giờ! Sáng nay nhà họ Trương mang khế ước đến đòi siết mảnh ruộng hương hỏa của mẹ em. Thân phận nô tì thấp cổ bé họng như chị em mình, biết lấy gì mà cãi lại nhà giàu có thế lực..."'
+        },
+        {
+          id: 404,
+          speaker: 'Liên',
+          spriteId: 'sprite_lien_hoodie',
+          action: '[Nhìn đôi vai gầy run rẩy của Thị Mận, vẻ nhí nhảnh lúc nãy dịu hẳn xuống, ánh mắt trở nên nghiêm túc và đồng cảm]',
+          dialogue: '"Ra là vậy... Ở thời phong kiến này, thân phận nô tì đúng là thấp hèn thật, nhưng không có nghĩa là mình chịu khoanh tay để kẻ khác bắt nạt đâu."'
+        },
+        {
+          id: 405,
+          speaker: 'Quản gia Lâm (Ngoài hành lang trực gác)',
+          spriteId: 'sprite_quan_gia_lam',
+          action: '[Gõ mạnh gậy gỗ xuống nền gạch, giọng khàn đặc, lạnh lẽo và đầy vẻ khinh miệt]',
+          dialogue: '"Con Liên đâu! Lũ hạ tiện chúng bay chỉ biết ăn hại, còn rúc xó kho làm gì nữa?! Thân phận nô tì thấp hèn như cỏ rác, mau mở rương thay bộ vải thô sạch sẽ rồi bưng khay lễ vật ra thư phòng hầu hạ khách quý! Chớ có dại mà thò bàn tay dơ bẩn đụng vào đống lụa là của tiểu thư, kẻo tội phạm thượng chém đầu không tha!"',
+          dramaticShake: true,
+          screenShakeMs: 600,
+          woodKnock: true
+        }
       ];
+
+      var SCENE_4_PART_2_SCRIPT = [
+        {
+          id: 406,
+          speaker: 'Liên',
+          spriteId: 'sprite_lien_hoodie',
+          action: '[Vội vã chạy tới chiếc rương gỗ lớn đặt ở góc kho, đưa tay nhấc nắp nhưng chiếc rương khóa chặt không nhúc nhích]',
+          dialogue: '"Ủa, khóa cứng ngắc rồi! Trên nắp rương có khắc một bảng chữ Hán bị xáo trộn vị trí kèm 5 ô trống nhập số... Quản gia gài mật mã để tránh người ngoài lục đồ đây mà!"'
+        },
+        {
+          id: 407,
+          speaker: 'Thị Mận',
+          spriteId: 'sprite_thiman',
+          action: '[Rón rén lại gần, thì thào lo lắng]',
+          dialogue: '"Tỷ Liên ơi, hôm qua Quản gia có dặn quy luật mở khóa rương này để gia nhân tự lấy áo, nhưng em dốt chữ nên không nhớ nổi... Tỷ…tỷ mau giải đi không… Quản gia ập vào bây giờ!"'
+        }
+      ];
+
+      var SCENE_3_PUZZLE_PROMPT = 'Theo bài vè cổ, hiện tại đang là năm bao nhiêu? (Nhập 4 chữ số)';
+      var SCENE_4_PUZZLE_PROMPT = 'Dưới triều đại độc tôn Nho giáo, kẻ làm người muốn giữ trọn đạo làm tôi phải sắp xếp Ngũ Thường theo đúng thứ tự chuẩn mực của thánh hiền. Hãy giải mã 5 con chữ Hán trên nắp rương và nhập dãy 5 con số tương ứng với thứ tự chuẩn của Ngũ Thường!';
+
+      var SCENE_3_EXPLANATION_TITLE = 'Chính xác! Đáp án: 1484';
+      var SCENE_3_EXPLANATION_BODY = 'Giải thích: Vua Lê Thánh Tông có 2 niên hiệu: Quang Thuận từ 1460–1469 và Hồng Đức từ 1470–1497. Năm Hồng Đức thứ 15 là 1470 + 14 = 1484, cũng là năm dựng bia Tiến sĩ đầu tiên tại Văn Miếu.';
+
+      var SCENE_4_EXPLANATION_TITLE = 'Chính xác! Đáp án: 35241';
+      var SCENE_4_EXPLANATION_BODY = 'Giải thích: Năm chữ Hán khắc trên nắp rương lần lượt là: 1. Tín (信) – 2. Lễ (禮) – 3. Nhân (仁) – 4. Trí (智) – 5. Nghĩa (義). Sắp xếp theo đúng trật tự chuẩn của Ngũ Thường dưới thời Nho giáo độc tôn (Nhân – Nghĩa – Lễ – Trí – Tín) ta được dãy số 3 – 5 – 2 – 4 – 1.';
+
+      var SCENE_HINTS_BY_SCENE = {
+        3: [
+          'Thời gian không nằm ở những lời than vãn đầu bài vè. Hãy chú ý đến hai câu nhắc về sự hưng thịnh của triều đại và một công trình lưu danh người đỗ đạt tại kinh thành.',
+          "Vị minh quân trị vì 38 năm này từng dùng hai niên hiệu. Hãy xác định niên hiệu thứ hai của ngài bắt đầu khi nào, và sự kiện 'sử xanh khắc bia' đầu tiên diễn ra vào năm thứ bao nhiêu của niên hiệu đó.",
+          'Năm đầu tiên của một niên hiệu luôn được tính là năm thứ nhất (nguyên niên), không phải năm thứ không. Hãy lấy mốc năm bắt đầu niên hiệu thứ hai cộng thêm khoảng cách chênh lệch thực tế đến năm thứ mười lăm.'
+        ],
+        4: [
+          'Năm con chữ Hán trên rương vốn là chuẩn mực đạo đức cốt lõi của Nho gia. Tuy nhiên, có kẻ nói khóa phủ quan xếp theo thứ tự quân tử đối nhân xử thế từ trong ra ngoài, cũng có kẻ đồn phải xếp ngược từ chữ giữ lời hứa để răn đe đám gia nhân.',
+          'Bỏ qua lời đồn xếp ngược dành cho gia nhân — triều đại này độc tôn Nho học chính thống nên luôn lấy lòng trắc ẩn thương người làm gốc rễ đầu tiên, sau đó mới xét đến lẽ phải và phép tắc lễ nghi.',
+          'Để đọc được mặt chữ Hán trên khóa, hãy nhớ mặt chữ có bộ Nhân đứng (亻) ở vị trí số 3 mang nghĩa là lòng thương người; chữ có bộ Ngôn (言) ở vị trí số 1 mang nghĩa là chữ Tín; còn chữ số 2 mang nghĩa là Lễ nghi.',
+          'Năm mặt chữ Hán khắc sẵn theo thứ tự từ 1 đến 5 trên rương lần lượt là: 1. Tín (信) — 2. Lễ (禮) — 3. Nhân (仁) — 4. Trí (智) — 5. Nghĩa (義). Giờ bạn chỉ cần sắp xếp lại chúng theo đúng trình tự chuẩn của Ngũ Thường.',
+          'Trình tự chuẩn của Ngũ Thường trong đạo Nho bắt đầu bằng: Nhân → Nghĩa → Lễ, và hai đức tính cuối cùng là Trí → Tín. Hãy tự đối chiếu từng chữ với con số gắn sẵn từ 1 đến 5 ở gợi ý trước để nhập mật mã!',
+          'Hãy ghép lần lượt số thứ tự trên nắp rương theo đúng trình tự Ngũ Thường: Nhân (mang số 3) → Nghĩa (mang số 5) → Lễ (mang số 2) → Trí (mang số 4) → Tín (mang số 1). Hãy nhập liền 5 con số này vào ô khóa!'
+        ],
+        5: [
+          'Phục sắc triều Lê phân định sang hèn rất rõ: sắc vàng là vùng cấm của bậc đế vương. Riêng những ngày phủ quan đón khách quý, có người bảo gia nhân được phép mặc vải sa đỏ tía cho đẹp mặt chủ, kẻ lại khuyên chỉ nên mặc vải thô trầm màu như thường ngày.',
+          'Kỷ cương thời Lê Sơ không có bất kỳ ngoại lệ nào cho kẻ dưới vượt qua ranh giới đẳng cấp. Mọi chất liệu lụa là, gấm vóc hay sắc đỏ, sắc tía đều là đặc quyền của tầng lớp trên; kẻ hạ nhân chạm vào sẽ mang tội khi quân phạm thượng.',
+          'Hãy chọn bộ y phục mang đúng tính chất lao động của tầng lớp thấp nhất: chất liệu dệt từ sợi cây thô mộc, thiết kế tay áo gọn gàng không vướng víu và mang màu sắc giản dị của bùn đất quê nhà.',
+          'Hãy nhìn vào thiết kế ống tay của ba bộ y phục: kẻ ngồi không hưởng lộc hay vung tay ngâm thơ mới may tay áo thụng rộng thướt tha. Người phải bưng bê, quét dọn suốt ngày nếu mặc tay rộng sẽ vướng víu, chỉ có một kiểu dáng duy nhất giữ được sự gọn gàng.',
+          'Thuốc nhuộm sặc sỡ thời phong kiến vô cùng đắt đỏ và bị triều đình kiểm soát gắt gao theo phẩm hàm. Tầng lớp dưới đáy xã hội chỉ dùng những loại củ, vỏ cây rẻ tiền nhất trong tự nhiên để nhuộm vải, tạo nên sắc độ trầm mặc gắn liền với bùn đất.',
+          'Hãy tự ghép 3 mảnh dữ kiện bạn vừa suy luận được từ ba gợi ý trước để đối chiếu với 3 lựa chọn trong rương: (1) Sợi cây thô mộc + (2) Ống tay gọn gàng không vướng víu + (3) Màu trầm của đất quê. Bộ áo duy nhất hội tụ đủ cả ba yếu tố này chính là đường sống của bạn!'
+        ]
+      };
+
+      var SCENE_5_OPENING_SCRIPT = [
+        {
+          id: 501,
+          speaker: 'Liên',
+          spriteId: 'sprite_lien_hoodie',
+          action: '[Vội cởi phăng chiếc áo hoodie, cuộn tròn nhét tọt xuống đáy rương rồi thở phào]',
+          dialogue: '"Phù... giấu kỹ cái áo này vào đáy rương đã, mặc ra ngoài chắc người ta tưởng mình bị điên mất!"'
+        },
+        {
+          id: 502,
+          speaker: 'Liên',
+          spriteId: 'sprite_lien_hoodie',
+          action: '[Nheo mắt nhìn 3 bộ áo cổ chéo trong rương, lẩm bẩm]',
+          dialogue: '"Cái thời phong kiến này soi mói từng tí một từ đầu đến chân... Phận nô tì mà chọn nhầm màu áo của quý tộc là xác định ăn đòn ướt người, phải nhìn cho kỹ mới được!"'
+        }
+      ];
+
+      var SCENE_5_WRONG_1_SCRIPT = [
+        {
+          id: 511,
+          speaker: 'Quản gia Lâm',
+          spriteId: 'sprite_quan_gia_lam',
+          action: '[Sầm mặt, trừng mắt khinh miệt chỉ thẳng tay vào bạn]',
+          dialogue: '"Đồ hạ tiện chán sống rồi sao?! Thân phận nô tì thấp hèn như cỏ rác mà dám khoác lên người sắc vàng của bậc đế vương quý tộc! Người đâu, lôi con tiện tì này ra sân đánh đủ năm mươi trượng gia pháp, tống vào ngục tối!"',
+          dramaticShake: true,
+          screenShakeMs: 600,
+          woodKnock: true
+        },
+        {
+          id: 512,
+          speaker: 'Liên',
+          spriteId: 'sprite_lien_hoodie',
+          action: '[Quỳ sụp xuống, mặt cắt không còn giọt máu, lắp bắp hoảng loạn]',
+          dialogue: '"Ơ... khoan đã lão gia ! Cháu... cháu chỉ mặc nhầm thôi mà... Á! Đau quá... Buông ra… Buông ra !"',
+          screenShakeMs: 420
+        }
+      ];
+
+      var SCENE_5_WRONG_2_SCRIPT = [
+        {
+          id: 521,
+          speaker: 'Quản gia Lâm',
+          spriteId: 'sprite_quan_gia_lam',
+          action: '[Nhếch mép cười lạnh lẽo, giọng đầy khinh bỉ]',
+          dialogue: '"Hay cho lũ nô tì to gan! Vải sa đỏ tía vốn dành riêng cho bậc quan lại và tiểu thư khuê các, hạng hạ nhân thấp kém như ngươi cũng dám chạm vào ư? Lôi ra sân đánh ba mươi trượng răn đe, nhốt vào xó tối suốt đời!"',
+          dramaticShake: true,
+          screenShakeMs: 600,
+          woodKnock: true
+        },
+        {
+          id: 522,
+          speaker: 'Liên',
+          spriteId: 'sprite_lien_hoodie',
+          action: '[Gục xuống nền đất lạnh ngắt, mếu máo tuyệt vọng, bị áp giải đi]',
+          dialogue: '"Huhu... chỉ tại cái màu đỏ này thôi mà... Cháu biết lỗi rồi mà, đừng đánh nữa... Xong đời thật rồi...á… aaaa."',
+          screenShakeMs: 420
+        }
+      ];
+
+      var SCENE_5_CORRECT_LINE = {
+        id: 531,
+        speaker: 'Liên',
+        spriteId: 'sprite_lien_nausong',
+        action: '[Khoác bộ áo vải thô lên người, loay hoay buộc dây đai bên hông rồi phủi phủi vạt áo]',
+        dialogue: '"Ui da, vải gì mà thô ráp cọ vào da ngứa hết cả người... Nhưng mà màu nâu sồng quê mùa với tay áo gọn thế này thì chuẩn rồi. Trông mình giờ y hệt người thời xưa luôn!"'
+      };
+
+      var SCENE_5_GAMEOVER_DATA = {
+        1: {
+          header: 'Bạn chịu phạt trượng vì vi phạm điều cấm kỵ tối cao của hoàng gia !',
+          bullets: [
+            '• Dưới thời Lê Sơ (đặc biệt là triều vua Lê Thánh Tông), triều đình áp dụng chế độ lễ nghi Nho giáo và phân hóa đẳng cấp vô cùng nghiêm ngặt qua trang phục.',
+            '• Màu vàng (Hoàng bào) và các họa tiết rồng phượng thêu chỉ kim tuyến là đặc quyền tuyệt đối chỉ dành riêng cho Nhà vua và Hoàng tộc. Bất kỳ ai (từ quan lại đến thường dân, nô tì) tự ý sử dụng sắc vàng hoặc hàng gấm vóc cung đình đều bị khép vào tội khi quân phạm thượng, xử phạt cực kỳ nặng nề.'
+          ]
+        },
+        2: {
+          header: 'Bạn bị trừng phạt vì tự ý mặc trang phục của tầng lớp trên',
+          bullets: [
+            '• Theo quy chế phục sắc dưới thời vua Lê Thánh Tông (năm 1466), màu đỏ, màu tía và các chất liệu cao cấp như lụa, gấm, vải sa chỉ dành cho quan lại triều đình (nhất phẩm đến tam phẩm mặc áo đỏ) và giới quý tộc, tiểu thư đài các.',
+            '• Đối với tầng lớp bình dân và nô tì, luật pháp quy định chỉ được mặc vải bông thô, vải gai với các gam màu trầm tối giản dị (như nâu sồng, đen, chàm) và ống tay gọn gàng để lao động. Việc nô tì mặc lụa là, màu sắc sặc sỡ bị coi là hành vi phá vỡ trật tự tôn ti của xã hội phong kiến.'
+          ]
+        }
+      };
 
       var QUIZ_QUESTION_BANK = [
         {
@@ -1941,7 +2626,155 @@
         }
       ];
 
+      var SCENE_4_QUIZ_BANK = [
+        {
+          id: 401,
+          type: 'TRUE_FALSE',
+          question: 'Nhận định sau Đúng hay Sai: Nhiều điều khoản trong Quốc triều hình luật thể hiện sự quan tâm bảo vệ sản xuất nông nghiệp, sức kéo (trâu bò), đê điều và quyền lợi của người phụ nữ, trẻ em.',
+          correct: 'Đúng',
+          weight: 1
+        },
+        {
+          id: 402,
+          type: 'TRUE_FALSE',
+          question: "Nhận định sau Đúng hay Sai: Việc pháp điển hóa các quy tắc đạo đức Nho giáo thành điều luật cụ thể trong Quốc triều hình luật cho thấy sự kết hợp chặt chẽ giữa 'đức trị' và 'pháp trị' của nhà Lê Sơ.",
+          correct: 'Đúng',
+          weight: 1
+        },
+        {
+          id: 403,
+          type: 'TRUE_FALSE',
+          question: 'Nhận định sau Đúng hay Sai: Việc dựng bia Tiến sĩ tại Văn Miếu không chỉ nhằm vinh danh người đỗ đạt mà còn là biện pháp răn đe, nhắc nhở kẻ sĩ giữ gìn thanh danh và trung thành với triều đình.',
+          correct: 'Đúng',
+          weight: 1
+        },
+        {
+          id: 404,
+          type: 'TRUE_FALSE',
+          question: 'Nhận định sau Đúng hay Sai: Cơ chế tuyển dụng quan lại chủ yếu qua thi cử Nho học thời Lê Sơ giúp mở rộng cơ hội tham chính cho tầng lớp bình dân có học, làm thay đổi cơ cấu tầng lớp thống trị từ quý tộc sang quan liêu nho sĩ.',
+          correct: 'Đúng',
+          weight: 1
+        },
+        {
+          id: 405,
+          type: 'TRUE_FALSE',
+          question: 'Nhận định sau Đúng hay Sai: Trong quan hệ với phương Bắc thời Lê Thánh Tông, nhà Lê Sơ chủ trương dùng vũ lực tấn công phủ đầu thay vì đấu tranh ngoại giao và giữ gìn biên cương.',
+          correct: 'Sai',
+          weight: 1
+        },
+        {
+          id: 406,
+          type: 'TRUE_FALSE',
+          question: 'Nhận định sau Đúng hay Sai: Văn hóa thời Hậu Lê thể hiện sự vận động từ tính chuẩn mực, quy phạm của văn hóa cung đình Nho giáo thế kỷ XV sang tính đa dạng, phóng khoáng và đậm chất dân gian ở thế kỷ XVII – XVIII.',
+          correct: 'Đúng',
+          weight: 1
+        }
+      ];
+
+      var SCENE_5_QUIZ_BANK = [
+        {
+          id: 501,
+          type: 'SHORT_ANSWER',
+          question: 'Vua Lê Thánh Tông khởi xướng việc dựng tấm bia Tiến sĩ đầu tiên tại Văn Miếu – Quốc Tử Giám (ghi danh khoa thi năm 1442) vào năm dương lịch nào?',
+          correct: '1484',
+          weight: 1
+        },
+        {
+          id: 502,
+          type: 'SHORT_ANSWER',
+          question: 'Giữa thời điểm nhà Lê Sơ bị nhà Mạc cướp ngôi (1527) và thời điểm Nguyễn Kim tôn lập Lê Duy Ninh lên ngôi mở đầu giai đoạn Lê Trung hưng (1533), ngai vàng nhà Hậu Lê bị gián đoạn trong bao nhiêu năm?',
+          correct: '6',
+          weight: 1
+        },
+        {
+          id: 503,
+          type: 'MULTIPLE_CHOICE',
+          question: 'Vì sao trong cuộc cải cách hành chính thời Lê Sơ, các cơ quan thanh tra – giám sát như Ngự sử đài và Lục khoa lại được trao quyền độc lập tương đối để giám sát hoạt động của Lục bộ?',
+          options: [
+            'A. Nhằm tạo cơ chế kiểm soát quyền lực nội bộ, ngăn ngừa quan lại tham nhũng, lạm quyền.',
+            'B. Nhằm thay thế hoàn toàn chức năng xét xử hình sự của Bộ Hình và Tam pháp ty.',
+            'C. Nhằm chuyển giao quyền điều hành hành chính sang cho đội ngũ nho sĩ mới đỗ đạt.',
+            'D. Nhằm hạn chế sự can thiệp của triều đình trung ương vào công việc của các đạo thừa tuyên.'
+          ],
+          correct: 'A',
+          weight: 1
+        },
+        {
+          id: 504,
+          type: 'MULTIPLE_CHOICE',
+          question: 'Chính sách quân điền thời Lê Sơ tác động trực tiếp như thế nào đến mối quan hệ giữa nhà nước phong kiến với kinh tế nông nghiệp và làng xã?',
+          options: [
+            'A. Xóa bỏ hoàn toàn quyền sở hữu ruộng đất tư nhân của địa chủ trên toàn quốc.',
+            'B. Khôi phục mô hình điền trang, thái ấp lớn của tầng lớp vương hầu quý tộc như thời Trần.',
+            'C. Khẳng định quyền sở hữu tối cao của nhà nước đối với ruộng đất công làng xã, ràng buộc nông dân vào ruộng đất để thu tô thuế.',
+            'D. Chuyển toàn bộ ruộng công làng xã thành đồn điền do quân đội trực tiếp canh tác.'
+          ],
+          correct: 'C',
+          weight: 1
+        },
+        {
+          id: 505,
+          type: 'MULTIPLE_CHOICE',
+          question: 'Cơ chế tổ chức ở cấp đạo thừa tuyên thời Lê Thánh Tông với ba cơ quan ngang quyền là Đô ty (quân sự), Thừa ty (hành chính – tài chính) và Hiến ty (thanh tra – tư pháp) có tác dụng gì?',
+          options: [
+            'A. Tạo điều kiện cho các quan đứng đầu đạo thâu tóm cả binh quyền lẫn tài chính.',
+            'B. Phân tán quyền lực ở cấp địa phương, ngăn chặn nguy cơ hình thành các thế lực quân phiệt cát cứ.',
+            'C. Rút gọn bộ máy hành chính địa phương xuống chỉ còn một đầu mối duy nhất.',
+            'D. Xóa bỏ hoàn toàn cấp hành chính phủ, huyện và xã bên dưới đạo thừa tuyên.'
+          ],
+          correct: 'B',
+          weight: 1
+        },
+        {
+          id: 506,
+          type: 'MULTIPLE_CHOICE',
+          question: 'Bài học kinh nghiệm nào từ cuộc cải cách hành chính của vua Lê Thánh Tông có giá trị tham khảo sâu sắc nhất đối với công cuộc xây dựng nền hành chính nhà nước pháp quyền hiện nay?',
+          options: [
+            'A. Tập trung toàn bộ quyền lập pháp, hành pháp và tư pháp vào một cá nhân đứng đầu.',
+            'B. Phân định rành mạch chức năng, thẩm quyền giữa các cơ quan chuyên môn gắn với cơ chế thanh tra, giám sát chéo và tuyển chọn cán bộ dựa trên thực tài.',
+            'C. Áp dụng nguyên tắc độc tôn một hệ tư tưởng duy nhất để loại bỏ phản biện.',
+            'D. Chia nhỏ đơn vị hành chính đến mức tối đa để triệt tiêu tính chủ động của địa phương.'
+          ],
+          correct: 'B',
+          weight: 1
+        }
+      ];
+
       var BIA_TIEN_SI_DETAIL = 'Bạn có biết? Thời vua Lê Thánh Tông, đỗ Tiến sĩ không chỉ được khắc tên lên bia đá mà còn được triều đình "bao trọn gói" lễ Vinh quy bái tổ: vua ban mũ áo, mở tiệc yến tại vườn Thượng Uyển và cấp quân lính rước võng lọng linh đình về tận quê nhà.';
+      var GIA_HUAN_CA_DETAIL = 'Bạn có biết? Dưới thời Lê Thánh Tông, Nho giáo trở thành hệ tư tưởng độc tôn chi phối từ triều chính đến nếp nhà. Các chuẩn mực Tam Cương, Ngũ Thường (Nhân – Nghĩa – Lễ – Trí – Tín) và những khúc ca giáo huấn gia phong được truyền dạy rộng rãi để rèn giũa đạo làm người, giữ gìn trật tự kỷ cương Đại Việt.';
+      var PHUC_SAC_DETAIL = 'Bạn có biết? Quốc triều hình luật (Luật Hồng Đức) quy định khắt khe màu áo theo phẩm trật: Hoàng đế mặc sắc vàng, quan nhất phẩm mặc tía, quan nhị - tam phẩm mặc đỏ, thường dân chỉ được mặc nâu, đen, trắng. Mặc sai màu quy định bị khép tội phạm thượng.';
+      var THE_BAI_DETAIL = 'Giấy thông hành hợp pháp để bước ra hành lang chính và vào Thư phòng';
+      var TRAM_NGOC_DETAIL = 'Bảo vật ẩn giấu: Tự động hóa giải và chặn đứng 1 lần bị trừ điểm Tín nhiệm tiếp theo trong hành trình.';
+
+      var ACHIEVEMENT_TITLES = [
+        {
+          id: 'bac_thay_nhap_the',
+          variant: 'honor',
+          categoryLabel: 'Danh hiệu Vinh Dự',
+          subTab: 'honor',
+          title: 'Bậc Thầy Nhập Thế',
+          description: 'Không cần nến soi đường, không một lần vấp ngã. Trí tuệ và sự cẩn trọng của ngươi đã vượt xa một kẻ mới lạc bước vào chốn phủ quan!'
+        },
+        {
+          id: 'pha_gia_chi_tu',
+          variant: 'clown',
+          categoryLabel: 'Danh hiệu Chúa Hề',
+          subTab: 'clown',
+          title: 'Phá gia chi tử',
+          description: 'Đã nhờ đến tổ tiên mà vẫn ko qua được, chán nhỉ ?'
+        },
+        {
+          id: 'vua_li_don',
+          variant: 'clown',
+          categoryLabel: 'Danh hiệu Chúa Hề',
+          subTab: 'clown',
+          title: 'Vua Lì Đòn Đất Thăng Long',
+          description: 'Bái phục ! Xin hãy nhận 1 lạy từ đệ tử .'
+        }
+      ];
+
+      var HONOR_SEAL_SVG = '<svg viewBox="0 0 64 64" style="width:34px;height:34px;" aria-hidden="true"><rect x="14" y="24" width="36" height="26" rx="4" fill="#ffd700" stroke="#926214" stroke-width="2.5"/><path d="M23 24 C23 14, 41 14, 41 24" fill="none" stroke="#ffd700" stroke-width="4.5" stroke-linecap="round"/><circle cx="32" cy="14" r="4.5" fill="#fff3b0"/><path d="M20 33 H44 M20 40 H44 M32 28 V45" stroke="#8b4513" stroke-width="2.2" stroke-linecap="round"/></svg>';
+      var CLOWN_MASK_SVG = '<svg viewBox="0 0 64 64" style="width:34px;height:34px;" aria-hidden="true"><path d="M14 18 C14 10, 50 10, 50 18 L48 38 C48 50, 16 50, 16 38 Z" fill="#f8fafc" stroke="#b82929" stroke-width="3"/><path d="M20 25 Q25 20 29 25 M35 25 Q39 20 44 25" fill="none" stroke="#1c1917" stroke-width="3" stroke-linecap="round"/><circle cx="23" cy="31" r="2.5" fill="#dc2626"/><circle cx="41" cy="31" r="2.5" fill="#dc2626"/><path d="M21 37 Q32 48 43 37" fill="none" stroke="#b82929" stroke-width="3.5" stroke-linecap="round"/></svg>';
 
       var CONFIG = {
         canvasWidth: 1376,
@@ -1951,15 +2784,19 @@
         enableDialogueShake: true,
         dialogueShakeIntensity: 6,
         dialogueShakeDuration: 0.42,
-        inactivePortraitBrightness: 0.32,
-        portraitTransitionSpeed: 6,
         ambientDustCount: 26,
         lienTargetX: 170,
         lienTargetY: 84,
         lienHeight: 636,
-        quanGiaTargetX: 825,
+        lienNauSongTargetX: 220,
+        lienNauSongTargetY: 86,
+        lienNauSongHeight: 632,
+        quanGiaTargetX: 760,
         quanGiaTargetY: 74,
         quanGiaHeight: 656,
+        thiManTargetX: 850,
+        thiManTargetY: 86,
+        thiManHeight: 628,
         dialogueBoxWidth: 1088,
         dialogueBoxHeight: 339,
         dialogueBoxBottomMargin: 14
@@ -2087,6 +2924,31 @@
             for (var i = 0; i < notes.length; i++) {
               blip(notes[i], null, 0.36, 'triangle', 0.07, i * 0.1);
             }
+          },
+          playWhipStrike: function () {
+            blip(140, 30, 0.15, 'triangle', 0.18, 0);
+            noiseWood(0.08, 0.11);
+          },
+          playDefeat: function () {
+            var notes = [311.13, 261.63, 246.94, 196.0];
+            for (var i = 0; i < notes.length; i++) {
+              blip(notes[i], null, 0.3, 'sawtooth', 0.07, i * 0.15);
+            }
+          },
+          playShieldBlock: function () {
+            blip(100, 30, 0.2, 'sine', 0.18, 0);
+            noiseWood(0.14, 0.1);
+          },
+          playHonorBell: function () {
+            blip(523.25, null, 1.35, 'sine', 0.14, 0);
+            blip(1046.5, null, 1.05, 'triangle', 0.08, 0);
+            blip(1567.98, null, 0.85, 'sine', 0.05, 0.02);
+            blip(2093.0, null, 0.7, 'sine', 0.035, 0.05);
+          },
+          playClownGong: function () {
+            blip(148, 96, 0.75, 'triangle', 0.22, 0);
+            blip(222, 146, 0.55, 'sine', 0.12, 0);
+            noiseWood(0.05, 0.11);
           },
           setMusicActive: function (active) {
             if (!active || !canvasCheck.isConnected) {
@@ -2350,6 +3212,90 @@
           ctx.beginPath();
           ctx.ellipse(w * 0.45, h * 0.65, w * 0.28, h * 0.32, 0, 0, Math.PI * 2);
           ctx.fill();
+        } else if (slotId === 'sprite_thiman') {
+          ctx.fillStyle = '#8b5a3c';
+          ctx.beginPath();
+          ctx.ellipse(w * 0.5, h * 0.65, w * 0.32, h * 0.32, 0, 0, Math.PI * 2);
+          ctx.fill();
+        } else if (slotId === 'nencanh4_ruong') {
+          var chBg = ctx.createLinearGradient(0, 0, 0, h);
+          chBg.addColorStop(0, '#18110c');
+          chBg.addColorStop(0.6, '#261a12');
+          chBg.addColorStop(1, '#160f0a');
+          ctx.fillStyle = chBg;
+          ctx.fillRect(0, 0, w, h);
+          ctx.fillStyle = '#3b1d12';
+          ctx.fillRect(w * 0.14, h * 0.42, w * 0.42, h * 0.38);
+          ctx.strokeStyle = '#9c7838';
+          ctx.lineWidth = 6;
+          ctx.strokeRect(w * 0.14, h * 0.42, w * 0.42, h * 0.38);
+        } else if (slotId === 'huyhieu_giahuanca') {
+          roundRectPath(ctx, w * 0.14, h * 0.2, w * 0.72, h * 0.6, 20);
+          ctx.fillStyle = '#d9b87c';
+          ctx.fill();
+          ctx.lineWidth = 10;
+          ctx.strokeStyle = '#6e4720';
+          ctx.stroke();
+        } else if (slotId === 'icon_tramcai') {
+          ctx.strokeStyle = '#6e472b';
+          ctx.lineWidth = 28;
+          ctx.lineCap = 'round';
+          ctx.beginPath();
+          ctx.moveTo(w * 0.12, h * 0.86);
+          ctx.lineTo(w * 0.76, h * 0.24);
+          ctx.stroke();
+          ctx.fillStyle = '#a7e3c5';
+          ctx.beginPath();
+          ctx.arc(w * 0.82, h * 0.18, w * 0.12, 0, Math.PI * 2);
+          ctx.fill();
+        } else if (slotId === 'nencanh5_ruongao') {
+          var s5Bg = ctx.createLinearGradient(0, 0, 0, h);
+          s5Bg.addColorStop(0, '#16110d');
+          s5Bg.addColorStop(0.55, '#251a12');
+          s5Bg.addColorStop(1, '#140e09');
+          ctx.fillStyle = s5Bg;
+          ctx.fillRect(0, 0, w, h);
+          ctx.fillStyle = '#3d2417';
+          ctx.fillRect(w * 0.22, h * 0.12, w * 0.52, h * 0.32);
+          ctx.fillStyle = '#29170f';
+          ctx.fillRect(w * 0.21, h * 0.44, w * 0.56, h * 0.38);
+          ctx.fillStyle = '#d49b1a';
+          ctx.fillRect(w * 0.29, h * 0.46, w * 0.11, h * 0.2);
+          ctx.fillStyle = '#882448';
+          ctx.fillRect(w * 0.44, h * 0.46, w * 0.12, h * 0.2);
+          ctx.fillStyle = '#4a3525';
+          ctx.fillRect(w * 0.6, h * 0.46, w * 0.1, h * 0.2);
+        } else if (slotId === 'sprite_lien_nausong') {
+          ctx.fillStyle = '#5c402c';
+          ctx.beginPath();
+          ctx.ellipse(w * 0.5, h * 0.65, w * 0.34, h * 0.32, 0, 0, Math.PI * 2);
+          ctx.fill();
+        } else if (slotId === 'huyhieu_phucsac') {
+          roundRectPath(ctx, w * 0.08, h * 0.12, w * 0.84, h * 0.76, 16);
+          ctx.fillStyle = '#ebd6ad';
+          ctx.fill();
+          ctx.lineWidth = 8;
+          ctx.strokeStyle = '#6e4720';
+          ctx.stroke();
+        } else if (slotId === 'item_thebai') {
+          roundRectPath(ctx, w * 0.22, h * 0.14, w * 0.56, h * 0.76, 18);
+          ctx.fillStyle = '#332018';
+          ctx.fill();
+          ctx.lineWidth = 8;
+          ctx.strokeStyle = '#c9a24d';
+          ctx.stroke();
+        } else if (slotId === 'item_tramngocbich') {
+          ctx.strokeStyle = '#2dd4bf';
+          ctx.lineWidth = 24;
+          ctx.lineCap = 'round';
+          ctx.beginPath();
+          ctx.moveTo(w * 0.18, h * 0.88);
+          ctx.lineTo(w * 0.72, h * 0.3);
+          ctx.stroke();
+          ctx.fillStyle = '#34d399';
+          ctx.beginPath();
+          ctx.arc(w * 0.76, h * 0.24, w * 0.16, 0, Math.PI * 2);
+          ctx.fill();
         }
 
         return c;
@@ -2415,16 +3361,31 @@
         dialogueCounter: document.getElementById('dialogue-counter'),
         openMenuBtn: document.getElementById('open-menu-btn'),
         topcenterPuzzleWrap: document.getElementById('topcenter-puzzle-wrap'),
+        topcenterPuzzlePill: document.getElementById('topcenter-puzzle-pill'),
         toprightHud: document.getElementById('topright-hud'),
+        achToastBanner: document.getElementById('achievement-toast-banner'),
+        achToastIconFrame: document.getElementById('ach-toast-icon-frame'),
+        achToastCat: document.getElementById('ach-toast-cat'),
+        achToastTitle: document.getElementById('ach-toast-title'),
+        achToastDesc: document.getElementById('ach-toast-desc'),
+        hudTrustBar: document.getElementById('hud-trust-bar'),
+        hudJadeShieldDot: document.getElementById('hud-jade-shield-dot'),
+        trustFloatingDelta: document.getElementById('trust-floating-delta'),
+        imgHudTramCai: document.getElementById('img-hud-tramcai'),
+        hudTrustFill: document.getElementById('hud-trust-fill'),
+        hudTrustVal: document.getElementById('hud-trust-val'),
         btnHudHint: document.getElementById('btn-hud-hint'),
         imgHudHint: document.getElementById('img-hud-hint'),
         btnHudCollection: document.getElementById('btn-hud-collection'),
         imgHudCollection: document.getElementById('img-hud-collection'),
         stageHost: document.getElementById('stage-host'),
+        scene4BonusToast: document.getElementById('scene4-bonus-toast'),
         stageBox: document.getElementById('stage-box'),
         canvas: document.getElementById('vn-canvas'),
         quanGiaDomMarker: document.getElementById('quan-gia-dom-marker'),
         lienDomMarker: document.getElementById('lien-dom-marker'),
+        lienNauSongDomMarker: document.getElementById('lien-nausong-dom-marker'),
+        thiManDomMarker: document.getElementById('thiman-dom-marker'),
         scene3Phase1Paper: document.getElementById('scene3-phase1-paper'),
         imgGiayDoPhase1: document.getElementById('img-giaydo-phase1'),
         dialogueUi: document.getElementById('dialogue-ui'),
@@ -2447,12 +3408,42 @@
         btnScene3PutAway: document.getElementById('btn-scene3-put-away'),
         scene3PasscodeErr: document.getElementById('scene3-passcode-err'),
         scene3ExplanationModal: document.getElementById('scene3-explanation-modal'),
+        explanationModalTitle: document.getElementById('explanation-modal-title'),
+        explanationModalBody: document.getElementById('explanation-modal-body'),
         btnScene3ClaimReward: document.getElementById('btn-scene3-claim-reward'),
-        scene4Placeholder: document.getElementById('scene4-placeholder'),
-        btnScene4Home: document.getElementById('btn-scene4-home'),
-        btnScene4Replay: document.getElementById('btn-scene4-replay'),
+        scene4LockOverlay: document.getElementById('scene4-lock-overlay'),
+        scene4PasscodeRow: document.getElementById('scene4-passcode-row'),
+        scene4PasscodeInput: document.getElementById('scene4-passcode-input'),
+        btnScene4Confirm: document.getElementById('btn-scene4-confirm'),
+        btnScene4PutAway: document.getElementById('btn-scene4-put-away'),
+        scene4PasscodeErr: document.getElementById('scene4-passcode-err'),
+        scene5RobeChoices: document.getElementById('scene5-robe-choices'),
+        btnS5Robe1: document.getElementById('btn-s5-robe-1'),
+        btnS5Robe2: document.getElementById('btn-s5-robe-2'),
+        btnS5Robe3: document.getElementById('btn-s5-robe-3'),
+        scene5WhipFlash: document.getElementById('scene5-whip-flash'),
+        scene5GameoverScreen: document.getElementById('scene5-gameover-screen'),
+        s5GameoverHeader: document.getElementById('s5-gameover-header'),
+        s5GameoverBullets: document.getElementById('s5-gameover-bullets'),
+        btnS5Rewind: document.getElementById('btn-s5-rewind'),
+        scene5RewindScreen: document.getElementById('scene5-rewind-screen'),
+        btnS5Retry: document.getElementById('btn-s5-retry'),
+        scene5RewardScreen: document.getElementById('scene5-reward-screen'),
+        btnS5RewPhucSac: document.getElementById('btn-s5-rew-phucsac'),
+        imgS5RewPhucSac: document.getElementById('img-s5-rew-phucsac'),
+        btnS5RewTheBai: document.getElementById('btn-s5-rew-thebai'),
+        imgS5RewTheBai: document.getElementById('img-s5-rew-thebai'),
+        btnS5RewTramNgoc: document.getElementById('btn-s5-rew-tramngoc'),
+        imgS5RewTramNgoc: document.getElementById('img-s5-rew-tramngoc'),
+        btnS5RewDetailLink: document.getElementById('btn-s5-rew-detail-link'),
+        s5RewJadeNote: document.getElementById('s5-rew-jade-note'),
+        btnS5Finish: document.getElementById('btn-s5-finish'),
+        scene5PrepScreen: document.getElementById('scene5-prep-screen'),
+        btnScene5Home: document.getElementById('btn-scene5-home'),
+        btnScene5Replay: document.getElementById('btn-scene5-replay'),
         bottombar: document.getElementById('scene-bottombar'),
         scene1ChoiceBtn: document.getElementById('scene1-choice-btn'),
+        scene4RunChestBtn: document.getElementById('scene4-run-chest-btn'),
         mobileNextBtn: document.getElementById('mobile-next-btn'),
         mobileNextLabel: document.getElementById('mobile-next-label'),
         bottomHintText: document.getElementById('bottom-hint-text'),
@@ -2460,11 +3451,16 @@
         scene2PocketBtn: document.getElementById('scene2-pocket-btn'),
         scene2ReadPaperBtn: document.getElementById('scene2-read-paper-btn'),
         scene3ReopenPaperBtn: document.getElementById('scene3-reopen-paper-btn'),
+        scene4ReopenLockBtn: document.getElementById('scene4-reopen-lock-btn'),
         rewardPopupModal: document.getElementById('reward-popup-modal'),
         btnRewardBadgeCard: document.getElementById('btn-reward-badge-card'),
         imgRewardBadge: document.getElementById('img-reward-badge'),
+        rewardBadgeTitle: document.getElementById('reward-badge-title'),
         btnRewardDetailLink: document.getElementById('btn-reward-detail-link'),
+        rewardTrustUnlockBanner: document.getElementById('reward-trust-unlock-banner'),
+        imgRewardTramCai: document.getElementById('img-reward-tramcai'),
         btnRewardContinue: document.getElementById('btn-reward-continue'),
+        rewardContinueLabel: document.getElementById('reward-continue-label'),
         hintOverlayModal: document.getElementById('hint-overlay-modal'),
         imgHintNenPopup: document.getElementById('img-hint-nen-popup'),
         btnCloseHintOverlay: document.getElementById('btn-close-hint-overlay'),
@@ -2475,6 +3471,7 @@
         btnReviewHints: document.getElementById('btn-review-hints'),
         btnTichLuyNen: document.getElementById('btn-tich-luy-nen'),
         hintViewConfirm: document.getElementById('hint-view-confirm'),
+        confirmHintPromptText: document.getElementById('confirm-hint-prompt-text'),
         confirmCandleOwned: document.getElementById('confirm-candle-owned'),
         confirmZeroCandleMsg: document.getElementById('confirm-zero-candle-msg'),
         btnConfirmYes: document.getElementById('btn-confirm-yes'),
@@ -2482,10 +3479,26 @@
         collectionOverlayModal: document.getElementById('collection-overlay-modal'),
         imgCollectionNenPopup: document.getElementById('img-collection-nen-popup'),
         btnCloseCollectionOverlay: document.getElementById('btn-close-collection-overlay'),
+        btnColTabItems: document.getElementById('btn-col-tab-items'),
+        btnColTabTitles: document.getElementById('btn-col-tab-titles'),
+        collectionItemsView: document.getElementById('collection-items-view'),
+        collectionTitlesView: document.getElementById('collection-titles-view'),
+        btnSubtabHonor: document.getElementById('btn-subtab-honor'),
+        btnSubtabClown: document.getElementById('btn-subtab-clown'),
+        titlesEmptyMsg: document.getElementById('titles-empty-msg'),
+        titlesPlaqueGrid: document.getElementById('titles-plaque-grid'),
         collectionEmptyMsg: document.getElementById('collection-empty-msg'),
         collectionGrid: document.getElementById('collection-grid'),
         btnCollectionBiaTienSi: document.getElementById('btn-collection-biatiensi'),
         imgCollectionBiaTienSi: document.getElementById('img-collection-biatiensi'),
+        btnCollectionGiaHuanCa: document.getElementById('btn-collection-giahuanca'),
+        imgCollectionGiaHuanCa: document.getElementById('img-collection-giahuanca'),
+        btnCollectionPhucSac: document.getElementById('btn-collection-phucsac'),
+        imgCollectionPhucSac: document.getElementById('img-collection-phucsac'),
+        btnCollectionTheBai: document.getElementById('btn-collection-thebai'),
+        imgCollectionTheBai: document.getElementById('img-collection-thebai'),
+        btnCollectionTramNgoc: document.getElementById('btn-collection-tramngoc'),
+        imgCollectionTramNgoc: document.getElementById('img-collection-tramngoc'),
         featheredHintModal: document.getElementById('feathered-hint-modal'),
         btnCloseFeatheredHint: document.getElementById('btn-close-feathered-hint'),
         featheredHintBody: document.getElementById('feathered-hint-body'),
@@ -2543,13 +3556,29 @@
        * 6. GAME STATE, LOCALSTORAGE AUTO-SAVE/RESUME & SCENE 1/2/3/4 SIMULATION
        * ===================================================================== */
       var state = {
-        status: 'START', // 'START' | 'PLAYING'
-        activeScene: 1, // 1 | 2 | 3 | 4
+        status: 'START',
+        activeScene: 1, // 1 | 2 | 3 | 4 | 5 | 6
         scene2Phase: 'STEP1_MENU',
         checkedChoices: {},
         activeInspectionId: null,
-        scene3Phase: 'dialogue', // 'dialogue' | 'puzzle' | 'explanation' | 'reward'
+        scene3Phase: 'dialogue',
         scene3DialogueIndex: 0,
+        scene4Phase: 'part1_dialogue',
+        scene4DialogueIndex: 0,
+        scene4ChoiceVisible: false,
+        isChestLockOpen: true,
+        scene4PasscodeError: '',
+        scene4CandleBonusClaimed: false,
+        scene5Phase: 'opening_dialogue',
+        scene5DialogueIndex: 0,
+        scene5WrongCount: 0,
+        scene5RewardClaimed: false,
+        jadeHairpinShieldActive: false,
+        pendingGameOverBranch: 1,
+        trustUnlocked: false,
+        trustPoints: 0,
+        scene4TrustClaimed: false,
+        rewardBadgeId: 'huyhieu_biatiensi',
         activeLineObj: SCENE_1_SCRIPT[0],
         hudUnlocked: false,
         isDoPaperOpen: true,
@@ -2558,14 +3587,18 @@
         candleCount: 1,
         hintsUsedByScene: {},
         hintOverlayOpen: false,
-        hintView: 'MAIN', // 'MAIN' | 'CONFIRM'
+        hintView: 'MAIN',
         activeHintText: null,
         quizOpen: false,
         quizQuestions: [],
         quizStepIndex: 0,
-        quizStatus: 'ANSWERING', // 'ANSWERING' | 'WON' | 'FAILED'
+        quizStatus: 'ANSWERING',
         unlockedBadges: {},
+        unlockedItems: {},
+        unlockedTitles: {},
         collectionOpen: false,
+        collectionMainTab: 'items',
+        collectionTitleSubTab: 'honor',
         badgeDetailOpen: false,
         menuOpen: false,
         howtoOpen: false,
@@ -2574,12 +3607,6 @@
         revealedInt: 0,
         lineComplete: false,
         choiceVisible: false,
-        lienAlpha: 1,
-        lienBrightness: 1,
-        lienOffsetY: 16,
-        quanGiaAlpha: 0,
-        quanGiaBrightness: 1,
-        quanGiaOffsetY: 16,
         shakeTimer: 0,
         shakeOffsetX: 0,
         shakeOffsetY: 0,
@@ -2587,24 +3614,175 @@
         dust: [],
         staffKnockTimeout: null,
         shudderShakeTimeout: null,
-        passcodeShakeTimeout: null
+        passcodeShakeTimeout: null,
+        bonusToastTimeout: null,
+        whipFlashTimeout: null,
+        trustDeltaTimeout: null,
+        achQueue: [],
+        achToastActive: false,
+        achHoldTimeout: null,
+        achExitTimeout: null
       };
+
+      function getMaxHintsForScene(sceneNum) {
+        return sceneNum >= 4 ? 6 : 3;
+      }
+
+      function getHintCost(sceneNum, usedCount) {
+        if (sceneNum === 5) return 2;
+        return (sceneNum >= 4 && usedCount >= 3) ? 2 : 1;
+      }
+
+      function getHintSceneKey() {
+        if (state.activeScene >= 5) return 5;
+        if (state.activeScene === 4) return 4;
+        return 3;
+      }
+
+      function showNextQueuedAchievementToast() {
+        if (!state.achQueue.length) {
+          state.achToastActive = false;
+          dom.achToastBanner.hidden = true;
+          return;
+        }
+        var item = state.achQueue.shift();
+        state.achToastActive = true;
+        var isHonor = item.variant === 'honor';
+        dom.achToastBanner.hidden = true;
+        dom.achToastBanner.className = 'vn-ach-toast ' + (isHonor ? 'is-honor' : 'is-clown');
+        dom.achToastBanner.style.color = isHonor ? '#d4af37' : '#ef4444';
+        dom.achToastIconFrame.style.borderColor = isHonor ? '#d4af37' : '#dc2626';
+        dom.achToastIconFrame.style.background = isHonor
+          ? 'radial-gradient(circle, #5c3f1c 0%, #2a1a0c 100%)'
+          : 'radial-gradient(circle, #4c1717 0%, #220909 100%)';
+        dom.achToastIconFrame.innerHTML = isHonor ? HONOR_SEAL_SVG : CLOWN_MASK_SVG;
+        dom.achToastCat.style.color = isHonor ? '#fbbf24' : '#f87171';
+        dom.achToastCat.textContent = item.categoryLabel;
+        dom.achToastTitle.style.color = isHonor ? '#FFF6D6' : '#FFE4E6';
+        dom.achToastTitle.textContent = item.title;
+        dom.achToastDesc.textContent = item.description;
+        void dom.achToastBanner.offsetWidth;
+        dom.achToastBanner.hidden = false;
+
+        if (isHonor) audioEngine.playHonorBell();
+        else audioEngine.playClownGong();
+
+        if (state.achHoldTimeout) clearTimeout(state.achHoldTimeout);
+        if (state.achExitTimeout) clearTimeout(state.achExitTimeout);
+
+        state.achHoldTimeout = setTimeout(function () {
+          state.achHoldTimeout = null;
+          dom.achToastBanner.classList.add('is-exiting');
+          state.achExitTimeout = setTimeout(function () {
+            state.achExitTimeout = null;
+            showNextQueuedAchievementToast();
+          }, 460);
+        }, 4500);
+      }
+
+      function unlockAchievementTitle(titleId) {
+        if (state.unlockedTitles[titleId]) return;
+        var found = null;
+        for (var i = 0; i < ACHIEVEMENT_TITLES.length; i++) {
+          if (ACHIEVEMENT_TITLES[i].id === titleId) {
+            found = ACHIEVEMENT_TITLES[i];
+            break;
+          }
+        }
+        if (!found) return;
+        state.unlockedTitles[titleId] = true;
+        state.achQueue.push(found);
+        if (!state.achToastActive) {
+          showNextQueuedAchievementToast();
+        }
+        persistGameplayProgress();
+      }
+
+      function triggerTrustFloatingDelta(text, tone) {
+        if (state.trustDeltaTimeout) clearTimeout(state.trustDeltaTimeout);
+        dom.trustFloatingDelta.hidden = true;
+        dom.trustFloatingDelta.textContent = text;
+        if (tone === 'negative') {
+          dom.trustFloatingDelta.style.background = 'rgba(69, 10, 10, 0.95)';
+          dom.trustFloatingDelta.style.border = '1px solid #ef4444';
+          dom.trustFloatingDelta.style.color = '#fca5a5';
+        } else if (tone === 'shield') {
+          dom.trustFloatingDelta.style.background = 'rgba(6, 46, 36, 0.95)';
+          dom.trustFloatingDelta.style.border = '1px solid #34d399';
+          dom.trustFloatingDelta.style.color = '#a7f3d0';
+        } else {
+          dom.trustFloatingDelta.style.background = 'rgba(8, 47, 73, 0.95)';
+          dom.trustFloatingDelta.style.border = '1px solid #fcd34d';
+          dom.trustFloatingDelta.style.color = '#a5f3fc';
+        }
+        void dom.trustFloatingDelta.offsetWidth;
+        dom.trustFloatingDelta.hidden = false;
+        state.trustDeltaTimeout = setTimeout(function () {
+          state.trustDeltaTimeout = null;
+          dom.trustFloatingDelta.hidden = true;
+        }, 2400);
+      }
+
+      function adjustTrust(delta) {
+        state.trustUnlocked = true;
+        if (delta < 0 && state.jadeHairpinShieldActive) {
+          state.jadeHairpinShieldActive = false;
+          audioEngine.playShieldBlock();
+          triggerTrustFloatingDelta('Trâm Ngọc Bích chặn trừ Tín nhiệm!', 'shield');
+          syncDialogueAndControlsDom();
+          persistGameplayProgress();
+          return;
+        }
+        state.trustPoints += delta;
+        if (delta < 0) {
+          audioEngine.playError();
+          triggerTrustFloatingDelta(delta + ' Tín nhiệm', 'negative');
+        } else if (delta > 0) {
+          audioEngine.playChime();
+          triggerTrustFloatingDelta('+' + delta + ' Tín nhiệm', 'positive');
+        }
+        syncDialogueAndControlsDom();
+        persistGameplayProgress();
+      }
 
       function readSavedProgress() {
         try {
           var raw = window.localStorage.getItem(SAVE_STORAGE_KEY);
+          if (!raw) raw = window.localStorage.getItem(LEGACY_STORAGE_KEY);
           if (!raw) return null;
           var parsed = JSON.parse(raw);
-          if (!parsed || parsed.version !== 2) return null;
+          if (!parsed || typeof parsed !== 'object') return null;
+          var isLegacyS4 =
+            parsed.scene === 'scene4_placeholder' ||
+            (parsed.activeScene === 4 && !parsed.scene4Phase);
+          var isLegacyS5 =
+            parsed.scene === 'scene5_placeholder' ||
+            (parsed.activeScene === 5 && !parsed.scene5Phase);
+
+          if (parsed.scene === 'scene6_placeholder' || parsed.activeScene === 6) {
+            parsed.activeScene = 6;
+          } else if (isLegacyS5 || parsed.scene === 'scene5') {
+            parsed.activeScene = 5;
+            if (isLegacyS5) {
+              parsed.scene5Phase = 'opening_dialogue';
+              parsed.scene5DialogueIndex = 0;
+            }
+          } else if (isLegacyS4 || parsed.scene === 'scene4') {
+            parsed.activeScene = 4;
+            if (isLegacyS4) {
+              parsed.scene4Phase = 'part1_dialogue';
+              parsed.scene4DialogueIndex = 0;
+              parsed.scene4ChoiceVisible = false;
+            }
+          }
           var sc = parsed.activeScene;
-          if (sc !== 1 && sc !== 2 && sc !== 3 && sc !== 4) return null;
+          if (sc !== 1 && sc !== 2 && sc !== 3 && sc !== 4 && sc !== 5 && sc !== 6) return null;
           return parsed;
         } catch (e) {
           return null;
         }
       }
 
-      // Strictly only writes when status === 'PLAYING' so visiting Start Screen never overwrites progress!
       function persistGameplayProgress() {
         if (state.status !== 'PLAYING') return;
         try {
@@ -2617,9 +3795,22 @@
           Object.keys(state.unlockedBadges).forEach(function (k) {
             if (state.unlockedBadges[k]) badgeArr.push(k);
           });
+          var itemArr = [];
+          Object.keys(state.unlockedItems).forEach(function (k) {
+            if (state.unlockedItems[k]) itemArr.push(k);
+          });
+          var titleArr = [];
+          Object.keys(state.unlockedTitles).forEach(function (k) {
+            if (state.unlockedTitles[k]) titleArr.push(k);
+          });
+
+          var persistedS5Phase = state.scene5Phase === 'whip_flash'
+            ? (state.pendingGameOverBranch === 2 ? 'gameover_2' : 'gameover_1')
+            : state.scene5Phase;
 
           var snapshot = {
             version: 2,
+            scene: state.activeScene === 6 ? 'scene6_placeholder' : ('scene' + state.activeScene),
             activeScene: state.activeScene,
             scene1LineIndex: state.lineIndex,
             scene1ChoiceVisible: Boolean(state.choiceVisible),
@@ -2629,10 +3820,25 @@
             scene3Phase: state.scene3Phase,
             scene3DialogueIndex: state.scene3DialogueIndex,
             paperHidden: !state.isDoPaperOpen,
+            scene4Phase: state.scene4Phase,
+            scene4DialogueIndex: state.scene4DialogueIndex,
+            scene4ChoiceVisible: Boolean(state.scene4ChoiceVisible),
+            chestLockHidden: !state.isChestLockOpen,
+            scene4CandleBonusClaimed: Boolean(state.scene4CandleBonusClaimed),
+            scene5Phase: persistedS5Phase,
+            scene5DialogueIndex: state.scene5DialogueIndex,
+            scene5WrongCount: state.scene5WrongCount,
+            scene5RewardClaimed: Boolean(state.scene5RewardClaimed),
+            jadeHairpinShieldActive: Boolean(state.jadeHairpinShieldActive),
             hudUnlocked: Boolean(state.hudUnlocked || state.activeScene >= 3),
+            trustUnlocked: Boolean(state.trustUnlocked || state.activeScene >= 5),
+            trustPoints: state.trustPoints,
+            scene4TrustClaimed: Boolean(state.scene4TrustClaimed),
             candles: state.candleCount,
             hintsUsedByScene: state.hintsUsedByScene,
-            unlockedBadges: badgeArr
+            unlockedBadges: badgeArr,
+            unlockedItems: itemArr,
+            unlockedTitles: titleArr
           };
           window.localStorage.setItem(SAVE_STORAGE_KEY, JSON.stringify(snapshot));
         } catch (e) {}
@@ -2646,7 +3852,8 @@
       }
 
       function pickTwoWeightedQuestions() {
-        var pool = QUIZ_QUESTION_BANK.slice();
+        var bank = state.activeScene >= 5 ? SCENE_5_QUIZ_BANK : (state.activeScene === 4 ? SCENE_4_QUIZ_BANK : QUIZ_QUESTION_BANK);
+        var pool = bank.slice();
         var picked = [];
         for (var d = 0; d < 2 && pool.length > 0; d++) {
           var totalW = 0;
@@ -2695,11 +3902,18 @@
         return line.action.length + 1 + line.dialogue.length;
       }
 
+      function isExplanationOpenNow() {
+        return (
+          (state.activeScene === 3 && state.scene3Phase === 'explanation') ||
+          (state.activeScene === 4 && state.scene4Phase === 'explanation')
+        );
+      }
+
       function isAnySubModalOpen() {
         return Boolean(
           state.menuOpen ||
           state.howtoOpen ||
-          (state.activeScene === 3 && state.scene3Phase === 'explanation') ||
+          isExplanationOpenNow() ||
           state.rewardPopupOpen ||
           state.hintOverlayOpen ||
           state.collectionOpen ||
@@ -2714,6 +3928,17 @@
         if (state.activeScene === 1) return true;
         if (state.activeScene === 2) return state.scene2Phase !== 'STEP1_MENU';
         if (state.activeScene === 3) return state.scene3Phase === 'dialogue';
+        if (state.activeScene === 4) {
+          return state.scene4Phase === 'part1_dialogue' || state.scene4Phase === 'part2_dialogue';
+        }
+        if (state.activeScene === 5) {
+          return (
+            state.scene5Phase === 'opening_dialogue' ||
+            state.scene5Phase === 'wrong1_dialogue' ||
+            state.scene5Phase === 'wrong2_dialogue' ||
+            state.scene5Phase === 'correct_dialogue'
+          );
+        }
         return false;
       }
 
@@ -2733,16 +3958,17 @@
         var isPlaying = state.status === 'PLAYING';
         var dialogueOpen = isDialogueOpenNow();
         var checkedCount = countCheckedChoices();
-        var isTopPuzzlePrompt = isPlaying && state.activeScene === 3 && state.scene3Phase === 'puzzle';
+        var isS3PuzzlePrompt = isPlaying && state.activeScene === 3 && state.scene3Phase === 'puzzle';
+        var isS4PuzzlePrompt = isPlaying && state.activeScene === 4 && state.scene4Phase === 'puzzle';
+        var isTopPuzzlePrompt = isS3PuzzlePrompt || isS4PuzzlePrompt;
 
-        // Top Bar Scene Label vs Top-Center Puzzle Prompt
         dom.sceneIndicatorWrap.hidden = isTopPuzzlePrompt;
         dom.topcenterPuzzleWrap.hidden = !isTopPuzzlePrompt;
+        if (isTopPuzzlePrompt) {
+          dom.topcenterPuzzlePill.textContent = isS4PuzzlePrompt ? SCENE_4_PUZZLE_PROMPT : SCENE_3_PUZZLE_PROMPT;
+        }
 
-        dom.sceneBadgeLabel.textContent =
-          state.activeScene === 1 ? 'Cảnh 1' :
-          state.activeScene === 2 ? 'Cảnh 2' :
-          state.activeScene === 3 ? 'Cảnh 3' : 'Cảnh 4';
+        dom.sceneBadgeLabel.textContent = 'Cảnh ' + state.activeScene;
 
         if (state.activeScene === 1) {
           dom.dialogueCounter.textContent = 'Thoại ' + (state.lineIndex + 1) + '/' + SCENE_1_SCRIPT.length;
@@ -2758,26 +3984,61 @@
           } else {
             dom.dialogueCounter.textContent = 'Giải mã bài vè cổ';
           }
+        } else if (state.activeScene === 4) {
+          if (state.scene4Phase === 'part1_dialogue') {
+            dom.dialogueCounter.textContent = 'Gặp Thị Mận (' + (state.scene4DialogueIndex + 1) + '/' + SCENE_4_PART_1_SCRIPT.length + ')';
+          } else if (state.scene4Phase === 'part2_dialogue') {
+            dom.dialogueCounter.textContent = 'Bên chiếc rương gỗ (' + (state.scene4DialogueIndex + 1) + '/' + SCENE_4_PART_2_SCRIPT.length + ')';
+          } else {
+            dom.dialogueCounter.textContent = 'Giải khóa Ngũ Thường';
+          }
+        } else if (state.activeScene === 5) {
+          dom.dialogueCounter.textContent = state.scene5Phase === 'robe_choice'
+            ? 'Chọn y phục Giao Lĩnh'
+            : 'Phục sắc triều Lê';
         } else {
-          dom.dialogueCounter.textContent = 'Chuẩn bị hành trình mới';
+          dom.dialogueCounter.textContent = 'Chuẩn bị lễ vật Cảnh 6';
         }
 
-        // Top-Right HUD ("Gợi ý" & "Bộ sưu tập", unlocked from Scene 3+)
+        // Top HUD: Trust Bar (top-left) + "Gợi ý" & "Bộ sưu tập" (top-right)
         dom.toprightHud.hidden = !(isPlaying && state.hudUnlocked && state.activeScene >= 3);
+        dom.hudTrustBar.hidden = !(isPlaying && state.trustUnlocked);
+        if (state.trustUnlocked) {
+          dom.hudTrustVal.textContent = String(state.trustPoints);
+          dom.hudTrustVal.style.color = state.trustPoints < 0 ? '#f87171' : '#ffffff';
+          dom.hudTrustBar.style.borderColor = state.trustPoints < 0
+            ? 'rgba(248, 113, 113, 0.8)'
+            : (state.jadeHairpinShieldActive ? 'rgba(52, 211, 153, 0.92)' : 'rgba(143, 168, 142, 0.78)');
+          dom.hudJadeShieldDot.hidden = !state.jadeHairpinShieldActive;
+          if (state.trustPoints < 0) {
+            dom.hudTrustFill.style.width = '100%';
+            dom.hudTrustFill.style.background = '#dc2626';
+          } else {
+            var pct = Math.max(12, Math.min(100, state.trustPoints * 12));
+            dom.hudTrustFill.style.width = pct + '%';
+            dom.hudTrustFill.style.background = 'linear-gradient(90deg,#34d399,#fcd34d)';
+          }
+        }
 
-        // Strict Character Hiding (`display: none`) in DOM
-        var showQgMarker = isPlaying && state.activeScene === 1 && state.lineIndex >= 3;
-        dom.quanGiaDomMarker.hidden = !showQgMarker;
-        dom.quanGiaDomMarker.style.display = showQgMarker ? 'block' : 'none';
+        // Strict Character Visibility Rule (`display: none` for all non-speaking characters & puzzle/modal phases)
+        var activeSprite = (dialogueOpen && !isAnySubModalOpen() && state.activeLineObj) ? state.activeLineObj.spriteId : null;
+        var showLien = activeSprite === 'sprite_lien_hoodie';
+        var showLienNs = activeSprite === 'sprite_lien_nausong';
+        var showThiMan = activeSprite === 'sprite_thiman';
+        var showQg = activeSprite === 'sprite_quan_gia_lam';
 
-        dom.lienDomMarker.hidden = !dialogueOpen;
-        dom.lienDomMarker.style.display = dialogueOpen ? 'block' : 'none';
+        dom.lienDomMarker.hidden = !showLien;
+        dom.lienDomMarker.style.display = showLien ? 'block' : 'none';
+        dom.lienNauSongDomMarker.hidden = !showLienNs;
+        dom.lienNauSongDomMarker.style.display = showLienNs ? 'block' : 'none';
+        dom.thiManDomMarker.hidden = !showThiMan;
+        dom.thiManDomMarker.style.display = showThiMan ? 'block' : 'none';
+        dom.quanGiaDomMarker.hidden = !showQg;
+        dom.quanGiaDomMarker.style.display = showQg ? 'block' : 'none';
 
-        // Scene 3 Phase 1 Center Paper (above bottom Dialogue Box)
         var showPhase1Paper = isPlaying && state.activeScene === 3 && state.scene3Phase === 'dialogue';
         dom.scene3Phase1Paper.hidden = !showPhase1Paper;
 
-        // Scene 2 Step 1 Menu
         var showStep1Menu = isPlaying && state.activeScene === 2 && state.scene2Phase === 'STEP1_MENU';
         dom.scene2Step1Menu.hidden = !showStep1Menu;
         dom.btnS2ChoiceA.hidden = Boolean(state.checkedChoices.A);
@@ -2787,28 +4048,55 @@
         dom.btnS2ChoiceB.style.display = state.checkedChoices.B ? 'none' : '';
         dom.btnS2ChoiceC.style.display = state.checkedChoices.C ? 'none' : '';
 
-        // Scene 3 Phase 2 ('puzzle') Paper Overlay
         var showScene3PuzzlePaper =
           isPlaying &&
           state.activeScene === 3 &&
           state.scene3Phase === 'puzzle' &&
           state.isDoPaperOpen;
         dom.scene3PaperOverlay.hidden = !showScene3PuzzlePaper;
-        dom.stageBox.classList.toggle('is-scene3-paper', showScene3PuzzlePaper);
         dom.scene3PasscodeErr.hidden = !state.passcodeError;
         dom.scene3PasscodeErr.textContent = state.passcodeError;
 
-        // Scene 3 Phase 3 ('explanation') Modal
-        dom.scene3ExplanationModal.hidden = !(
+        var showScene4Lock =
           isPlaying &&
-          state.activeScene === 3 &&
-          state.scene3Phase === 'explanation'
-        );
+          state.activeScene === 4 &&
+          state.scene4Phase === 'puzzle' &&
+          state.isChestLockOpen;
+        dom.scene4LockOverlay.hidden = !showScene4Lock;
+        dom.scene4PasscodeErr.hidden = !state.scene4PasscodeError;
+        dom.scene4PasscodeErr.textContent = state.scene4PasscodeError;
 
-        // Scene 4 Placeholder
-        dom.scene4Placeholder.hidden = !(isPlaying && state.activeScene === 4);
+        dom.stageBox.classList.toggle('is-scene3-paper', showScene3PuzzlePaper || showScene4Lock);
 
-        // Dialogue Overlay
+        var expOpen = isPlaying && isExplanationOpenNow();
+        dom.scene3ExplanationModal.hidden = !expOpen;
+        if (expOpen) {
+          dom.explanationModalTitle.textContent = state.activeScene === 4 ? SCENE_4_EXPLANATION_TITLE : SCENE_3_EXPLANATION_TITLE;
+          dom.explanationModalBody.textContent = state.activeScene === 4 ? SCENE_4_EXPLANATION_BODY : SCENE_3_EXPLANATION_BODY;
+        }
+
+        var isS5 = isPlaying && state.activeScene === 5;
+        dom.scene5RobeChoices.hidden = !(isS5 && state.scene5Phase === 'robe_choice');
+        dom.scene5WhipFlash.hidden = !(isS5 && state.scene5Phase === 'whip_flash');
+        var isS5Go = isS5 && (state.scene5Phase === 'gameover_1' || state.scene5Phase === 'gameover_2');
+        dom.scene5GameoverScreen.hidden = !isS5Go;
+        if (isS5Go) {
+          var goData = state.scene5Phase === 'gameover_1' ? SCENE_5_GAMEOVER_DATA[1] : SCENE_5_GAMEOVER_DATA[2];
+          dom.s5GameoverHeader.textContent = goData.header;
+          dom.s5GameoverBullets.innerHTML = goData.bullets.map(function (b) {
+            return '<p>' + b + '</p>';
+          }).join('');
+        }
+        dom.scene5RewindScreen.hidden = !(isS5 && state.scene5Phase === 'rewind_black');
+        dom.scene5RewardScreen.hidden = !(isS5 && state.scene5Phase === 'reward');
+        if (isS5 && state.scene5Phase === 'reward') {
+          var hasJade = Boolean(state.unlockedItems.item_tramngocbich);
+          dom.btnS5RewTramNgoc.hidden = !hasJade;
+          dom.s5RewJadeNote.hidden = !hasJade;
+        }
+
+        dom.scene5PrepScreen.hidden = !(isPlaying && state.activeScene === 6);
+
         dom.dialogueUi.hidden = !dialogueOpen;
         if (dialogueOpen && state.activeLineObj) {
           var line = state.activeLineObj;
@@ -2820,13 +4108,24 @@
 
           dom.speakerBadge.textContent = line.speaker;
           dom.speakerBadge.style.backgroundColor =
-            (state.activeScene === 1 && line.spriteId === 'sprite_quan_gia_lam') ? '#2c2738' : '#3a4f3e';
+            line.spriteId === 'sprite_quan_gia_lam' ? '#2c2738' :
+            line.spriteId === 'sprite_thiman' ? '#5c3824' : '#3a4f3e';
           dom.stageActionSpan.textContent = shownAction;
           dom.spokenLineSpan.textContent = shownSpoken;
 
           var canAdvanceLine =
             (state.activeScene === 1 && state.lineIndex < SCENE_1_SCRIPT.length - 1) ||
-            (state.activeScene === 3 && state.scene3Phase === 'dialogue');
+            (state.activeScene === 3 && state.scene3Phase === 'dialogue') ||
+            (state.activeScene === 4 && (
+              (state.scene4Phase === 'part1_dialogue' && state.scene4DialogueIndex < SCENE_4_PART_1_SCRIPT.length - 1) ||
+              state.scene4Phase === 'part2_dialogue'
+            )) ||
+            (state.activeScene === 5 && (
+              state.scene5Phase === 'opening_dialogue' ||
+              state.scene5Phase === 'wrong1_dialogue' ||
+              state.scene5Phase === 'wrong2_dialogue' ||
+              state.scene5Phase === 'correct_dialogue'
+            ));
 
           if (isMobile) {
             dom.desktopHint.hidden = true;
@@ -2847,22 +4146,34 @@
           }
         }
 
-        // Bottom Action Bar
-        var hideBottomForS3Modals =
-          state.activeScene === 3 &&
-          (state.scene3Phase === 'explanation' || state.scene3Phase === 'reward');
+        var hideBottomForModals =
+          (state.activeScene === 3 && (state.scene3Phase === 'explanation' || state.scene3Phase === 'reward')) ||
+          (state.activeScene === 4 && (state.scene4Phase === 'explanation' || state.scene4Phase === 'reward')) ||
+          (state.activeScene === 5 && state.scene5Phase !== 'opening_dialogue' && state.scene5Phase !== 'wrong1_dialogue' && state.scene5Phase !== 'wrong2_dialogue' && state.scene5Phase !== 'correct_dialogue');
         var showBottomBar =
           isPlaying &&
           !showScene3PuzzlePaper &&
-          !hideBottomForS3Modals &&
-          state.activeScene !== 4;
+          !showScene4Lock &&
+          !hideBottomForModals &&
+          state.activeScene !== 6;
         dom.bottombar.hidden = !showBottomBar;
 
         var isLinearDialogueScene =
           (state.activeScene === 1 && !state.choiceVisible) ||
-          (state.activeScene === 3 && state.scene3Phase === 'dialogue');
+          (state.activeScene === 3 && state.scene3Phase === 'dialogue') ||
+          (state.activeScene === 4 && (
+            (state.scene4Phase === 'part1_dialogue' && !state.scene4ChoiceVisible) ||
+            state.scene4Phase === 'part2_dialogue'
+          )) ||
+          (state.activeScene === 5 && (
+            state.scene5Phase === 'opening_dialogue' ||
+            state.scene5Phase === 'wrong1_dialogue' ||
+            state.scene5Phase === 'wrong2_dialogue' ||
+            state.scene5Phase === 'correct_dialogue'
+          ));
 
         dom.scene1ChoiceBtn.hidden = !(isPlaying && state.activeScene === 1 && state.choiceVisible);
+        dom.scene4RunChestBtn.hidden = !(isPlaying && state.activeScene === 4 && state.scene4Phase === 'part1_dialogue' && state.scene4ChoiceVisible);
         dom.mobileNextBtn.hidden = !(isPlaying && isLinearDialogueScene && isMobile);
         if (!dom.mobileNextBtn.hidden) {
           dom.mobileNextLabel.textContent = state.lineComplete ? 'Tiếp tục' : 'Hiện hết';
@@ -2876,6 +4187,12 @@
           state.activeScene === 3 &&
           state.scene3Phase === 'puzzle' &&
           !state.isDoPaperOpen
+        );
+        dom.scene4ReopenLockBtn.hidden = !(
+          isPlaying &&
+          state.activeScene === 4 &&
+          state.scene4Phase === 'puzzle' &&
+          !state.isChestLockOpen
         );
 
         if (isPlaying && isLinearDialogueScene && !isMobile) {
@@ -2892,9 +4209,11 @@
       }
 
       function syncHintAndQuizModalsDom() {
-        var sceneKey = state.activeScene >= 3 ? 3 : state.activeScene;
+        var sceneKey = getHintSceneKey();
+        var maxHints = getMaxHintsForScene(sceneKey);
         var usedCount = state.hintsUsedByScene[sceneKey] || 0;
-        var exhausted = usedCount >= 3;
+        var exhausted = usedCount >= maxHints;
+        var reqCost = getHintCost(sceneKey, usedCount);
 
         dom.hintOverlayModal.hidden = !state.hintOverlayOpen;
         if (state.hintOverlayOpen) {
@@ -2902,23 +4221,87 @@
           dom.hintViewConfirm.hidden = state.hintView !== 'CONFIRM';
 
           dom.hintCandleStatus.textContent = 'Ngọn Nến Tri Thức hiện có: ' + state.candleCount;
+          dom.hintExhaustedNotice.textContent = 'Bạn đã dùng hết ' + maxHints + ' lượt gợi ý cho cảnh này';
           dom.hintExhaustedNotice.hidden = !exhausted;
           dom.btnXinGoiY.disabled = exhausted;
           dom.btnReviewHints.hidden = !(usedCount > 0);
 
+          dom.confirmHintPromptText.textContent = 'Bạn có muốn tiêu hao ' + reqCost + ' Nến Tri Thức để nhận gợi ý không?';
           dom.confirmCandleOwned.textContent = 'Số Nến Tri Thức đang sở hữu: ' + state.candleCount;
-          dom.btnConfirmYes.disabled = state.candleCount <= 0 || exhausted;
-          dom.confirmZeroCandleMsg.hidden = !(state.candleCount <= 0);
+          dom.btnConfirmYes.disabled = state.candleCount < reqCost || exhausted;
+          if (state.candleCount < reqCost) {
+            dom.confirmZeroCandleMsg.hidden = false;
+            dom.confirmZeroCandleMsg.textContent = state.candleCount === 0
+              ? 'Bạn hiện có 0 Nến Tri Thức. Hãy chọn "Quay lại" rồi nhấn "Tích lũy Nến Tri Thức" để nhận thêm nến!'
+              : ('Gợi ý này cần ' + reqCost + ' Nến Tri Thức (bạn đang có ' + state.candleCount + '). Hãy chọn "Quay lại" rồi nhấn "Tích lũy Nến Tri Thức" để nhận thêm nến!');
+          } else {
+            dom.confirmZeroCandleMsg.hidden = true;
+          }
         }
 
         dom.collectionOverlayModal.hidden = !state.collectionOpen;
         if (state.collectionOpen) {
-          var hasBia = Boolean(state.unlockedBadges.huyhieu_biatiensi);
-          dom.collectionEmptyMsg.hidden = hasBia;
-          dom.collectionGrid.hidden = !hasBia;
+          var isItemsTab = state.collectionMainTab === 'items';
+          dom.collectionItemsView.hidden = !isItemsTab;
+          dom.collectionTitlesView.hidden = isItemsTab;
+          dom.btnColTabItems.classList.toggle('primary', isItemsTab);
+          dom.btnColTabTitles.classList.toggle('primary', !isItemsTab);
+
+          if (isItemsTab) {
+            var hasBia = Boolean(state.unlockedBadges.huyhieu_biatiensi);
+            var hasGia = Boolean(state.unlockedBadges.huyhieu_giahuanca);
+            var hasPhuc = Boolean(state.unlockedBadges.huyhieu_phucsac);
+            var hasTheBai = Boolean(state.unlockedItems.item_thebai);
+            var hasTramNgoc = Boolean(state.unlockedItems.item_tramngocbich);
+            var hasAny = hasBia || hasGia || hasPhuc || hasTheBai || hasTramNgoc;
+            dom.collectionEmptyMsg.hidden = hasAny;
+            dom.collectionGrid.hidden = !hasAny;
+            dom.btnCollectionBiaTienSi.hidden = !hasBia;
+            dom.btnCollectionGiaHuanCa.hidden = !hasGia;
+            dom.btnCollectionPhucSac.hidden = !hasPhuc;
+            dom.btnCollectionTheBai.hidden = !hasTheBai;
+            dom.btnCollectionTramNgoc.hidden = !hasTramNgoc;
+          } else {
+            var isHonorSub = state.collectionTitleSubTab === 'honor';
+            dom.btnSubtabHonor.style.borderColor = isHonorSub ? '#ffd700' : 'rgba(182,137,69,0.45)';
+            dom.btnSubtabHonor.style.backgroundColor = isHonorSub ? '#5c3d14' : 'rgba(22,14,10,0.85)';
+            dom.btnSubtabClown.style.borderColor = !isHonorSub ? '#ef4444' : 'rgba(182,137,69,0.45)';
+            dom.btnSubtabClown.style.backgroundColor = !isHonorSub ? '#5c1616' : 'rgba(22,14,10,0.85)';
+
+            var earnedList = ACHIEVEMENT_TITLES.filter(function (t) {
+              return t.subTab === state.collectionTitleSubTab && Boolean(state.unlockedTitles[t.id]);
+            });
+            dom.titlesEmptyMsg.hidden = earnedList.length > 0;
+            dom.titlesPlaqueGrid.hidden = earnedList.length === 0;
+            if (earnedList.length > 0) {
+              dom.titlesPlaqueGrid.innerHTML = earnedList.map(function (t) {
+                var hon = t.variant === 'honor';
+                var bg = hon ? 'linear-gradient(180deg,#2d1d12 0%,#1b110b 100%)' : 'linear-gradient(180deg,#2f1212 0%,#1b0a0a 100%)';
+                var bc = hon ? '#d4af37' : '#b82929';
+                var svg = hon ? HONOR_SEAL_SVG : CLOWN_MASK_SVG;
+                return '<div class="vn-title-plaque" style="background:' + bg + ';border-color:' + bc + ';">' +
+                  '<div style="width:46px;height:46px;border-radius:999px;border:1px solid ' + bc + ';background:rgba(18,10,7,0.85);display:flex;align-items:center;justify-content:center;flex-shrink:0;">' + svg + '</div>' +
+                  '<div style="flex:1 1 auto;min-width:0;">' +
+                  '<h4 style="font-family:\'Noto Serif\',Georgia,serif;font-size:15px;font-weight:700;color:#FFF6D6;">' + t.title + '</h4>' +
+                  '<p style="font-size:12.5px;color:#e7e5e4;line-height:1.45;margin-top:4px;">' + t.description + '</p>' +
+                  '</div>' +
+                  '<div class="vn-seal-dadat">ĐÃ ĐẠT</div>' +
+                  '</div>';
+              }).join('');
+            }
+          }
         }
 
         dom.rewardPopupModal.hidden = !state.rewardPopupOpen;
+        if (state.rewardPopupOpen) {
+          var isGiaReward = state.rewardBadgeId === 'huyhieu_giahuanca';
+          dom.rewardBadgeTitle.textContent = isGiaReward ? 'Gia Huấn Ca Của Bậc Nho Sĩ' : 'Bia Tiến Sĩ Khoa Nhâm Tuất';
+          dom.imgRewardBadge.src = isGiaReward
+            ? (assetDataUrls.huyhieu_giahuanca || '')
+            : (assetDataUrls.huyhieu_biatiensi || '');
+          dom.rewardTrustUnlockBanner.hidden = !isGiaReward;
+          dom.rewardContinueLabel.textContent = isGiaReward ? 'Mở nắp rương y phục ra' : 'Tiếp tục';
+        }
 
         dom.featheredHintModal.hidden = state.activeHintText === null;
         if (state.activeHintText !== null) {
@@ -3015,7 +4398,7 @@
             dom.btnCloseCollectionOverlay.focus();
           } else if (state.menuOpen && state.status === 'PLAYING') {
             dom.btnResume.focus();
-          } else if (state.activeScene === 3 && state.scene3Phase === 'explanation') {
+          } else if (isExplanationOpenNow()) {
             dom.btnScene3ClaimReward.focus();
           } else if (state.rewardPopupOpen) {
             dom.btnRewardContinue.focus();
@@ -3037,13 +4420,94 @@
               if (!state.isDoPaperOpen) dom.scene3ReopenPaperBtn.focus();
               else dom.scene3PasscodeInput.focus();
             } else if (state.activeScene === 4) {
-              dom.btnScene4Home.focus();
+              if (state.scene4Phase === 'part1_dialogue' && state.scene4ChoiceVisible && state.lineComplete) {
+                dom.scene4RunChestBtn.focus();
+              } else if (state.scene4Phase === 'puzzle') {
+                if (!state.isChestLockOpen) dom.scene4ReopenLockBtn.focus();
+                else dom.scene4PasscodeInput.focus();
+              }
+            } else if (state.activeScene === 5) {
+              if (state.scene5Phase === 'robe_choice') dom.btnS5Robe1.focus();
+              else if (state.scene5Phase === 'gameover_1' || state.scene5Phase === 'gameover_2') dom.btnS5Rewind.focus();
+              else if (state.scene5Phase === 'rewind_black') dom.btnS5Retry.focus();
+              else if (state.scene5Phase === 'reward') dom.btnS5Finish.focus();
+            } else if (state.activeScene === 6) {
+              dom.btnScene5Home.focus();
             }
           }
         });
       }
 
-      function beginTypewriterForLine(lineObj, showScene1ChoiceImmediate, forceInstant) {
+      function triggerStageShudderShake(isBrief) {
+        if (state.shudderShakeTimeout) {
+          clearTimeout(state.shudderShakeTimeout);
+          state.shudderShakeTimeout = null;
+        }
+        dom.stageHost.classList.remove('is-shuddering', 'is-shuddering-brief');
+        void dom.stageHost.offsetWidth;
+        var cls = isBrief ? 'is-shuddering-brief' : 'is-shuddering';
+        dom.stageHost.classList.add(cls);
+        state.shudderShakeTimeout = setTimeout(function () {
+          state.shudderShakeTimeout = null;
+          dom.stageHost.classList.remove('is-shuddering', 'is-shuddering-brief');
+        }, isBrief ? 410 : 620);
+      }
+
+      function triggerLineEffects(line, suppressEffects) {
+        if (state.staffKnockTimeout) {
+          clearTimeout(state.staffKnockTimeout);
+          state.staffKnockTimeout = null;
+        }
+        if (suppressEffects || !line) {
+          state.shakeTimer = 0;
+          state.shakeOffsetX = 0;
+          state.shakeOffsetY = 0;
+          dom.dialogueLayer4.style.transform = 'translate(0px, 0px)';
+          return;
+        }
+
+        if (line.woodKnock || (line.dramaticShake && state.activeScene === 1)) {
+          audioEngine.playWoodStaff();
+          var expectedId = line.id;
+          state.staffKnockTimeout = setTimeout(function () {
+            state.staffKnockTimeout = null;
+            if (state.status === 'PLAYING' && state.activeLineObj && state.activeLineObj.id === expectedId) {
+              audioEngine.playWoodStaff();
+            }
+          }, 140);
+        }
+
+        if (line.screenShakeMs) {
+          triggerStageShudderShake(line.screenShakeMs < 500);
+        }
+
+        if (line.dramaticShake && CONFIG.enableDialogueShake) {
+          state.shakeTimer = CONFIG.dialogueShakeDuration;
+        } else {
+          state.shakeTimer = 0;
+          state.shakeOffsetX = 0;
+          state.shakeOffsetY = 0;
+          dom.dialogueLayer4.style.transform = 'translate(0px, 0px)';
+        }
+
+        if (line.candleBonus && !state.scene4CandleBonusClaimed) {
+          state.scene4CandleBonusClaimed = true;
+          state.candleCount += line.candleBonus;
+          audioEngine.playChime();
+          if (state.bonusToastTimeout) {
+            clearTimeout(state.bonusToastTimeout);
+          }
+          dom.scene4BonusToast.hidden = true;
+          void dom.scene4BonusToast.offsetWidth;
+          dom.scene4BonusToast.hidden = false;
+          state.bonusToastTimeout = setTimeout(function () {
+            state.bonusToastTimeout = null;
+            dom.scene4BonusToast.hidden = true;
+          }, 4400);
+        }
+      }
+
+      function beginTypewriterForLine(lineObj, showScene1ChoiceImmediate, forceInstant, showScene4ChoiceImmediate) {
         state.activeLineObj = lineObj;
         var total = getCurrentLineTotalChars();
         if (CONFIG.enableTypewriter && !forceInstant) {
@@ -3051,11 +4515,13 @@
           state.revealedInt = 0;
           state.lineComplete = false;
           state.choiceVisible = false;
+          state.scene4ChoiceVisible = false;
         } else {
           state.revealedFloat = total;
           state.revealedInt = total;
           state.lineComplete = true;
           state.choiceVisible = Boolean(showScene1ChoiceImmediate);
+          state.scene4ChoiceVisible = Boolean(showScene4ChoiceImmediate);
         }
       }
 
@@ -3064,30 +4530,8 @@
         var line = SCENE_1_SCRIPT[clamped];
         state.lineIndex = clamped;
         var isLast = clamped === SCENE_1_SCRIPT.length - 1;
-        beginTypewriterForLine(line, isLast, Boolean(forceCompleteChoice && isLast));
-
-        if (state.staffKnockTimeout) {
-          clearTimeout(state.staffKnockTimeout);
-          state.staffKnockTimeout = null;
-        }
-
-        if (line && line.dramaticShake && !forceCompleteChoice) {
-          audioEngine.playWoodStaff();
-          state.staffKnockTimeout = setTimeout(function () {
-            state.staffKnockTimeout = null;
-            if (state.status === 'PLAYING' && state.activeScene === 1 && state.lineIndex === clamped) {
-              audioEngine.playWoodStaff();
-            }
-          }, 140);
-          if (CONFIG.enableDialogueShake) {
-            state.shakeTimer = CONFIG.dialogueShakeDuration;
-          }
-        } else {
-          state.shakeTimer = 0;
-          state.shakeOffsetX = 0;
-          state.shakeOffsetY = 0;
-          dom.dialogueLayer4.style.transform = 'translate(0px, 0px)';
-        }
+        beginTypewriterForLine(line, isLast, Boolean(forceCompleteChoice && isLast), false);
+        triggerLineEffects(line, Boolean(forceCompleteChoice));
 
         syncDialogueAndControlsDom();
         persistGameplayProgress();
@@ -3098,36 +4542,56 @@
         var clamped = Math.max(0, Math.min(SCENE_3_DIALOGUE_SCRIPT.length - 1, idx));
         var line = SCENE_3_DIALOGUE_SCRIPT[clamped];
         state.scene3DialogueIndex = clamped;
-        beginTypewriterForLine(line, false, false);
+        beginTypewriterForLine(line, false, false, false);
+        triggerLineEffects(line, true);
         syncDialogueAndControlsDom();
         persistGameplayProgress();
       }
 
-      function triggerStageShudderShake() {
-        if (state.shudderShakeTimeout) {
-          clearTimeout(state.shudderShakeTimeout);
-          state.shudderShakeTimeout = null;
-        }
-        dom.stageHost.classList.remove('is-shuddering');
-        void dom.stageHost.offsetWidth;
-        dom.stageHost.classList.add('is-shuddering');
-        state.shudderShakeTimeout = setTimeout(function () {
-          state.shudderShakeTimeout = null;
-          dom.stageHost.classList.remove('is-shuddering');
-        }, 620);
+      function activateScene4Part1Line(idx, forceCompleteChoice, suppressEffects) {
+        var clamped = Math.max(0, Math.min(SCENE_4_PART_1_SCRIPT.length - 1, idx));
+        var line = SCENE_4_PART_1_SCRIPT[clamped];
+        state.scene4DialogueIndex = clamped;
+        var isLast = clamped === SCENE_4_PART_1_SCRIPT.length - 1;
+        beginTypewriterForLine(line, false, Boolean(forceCompleteChoice && isLast), isLast);
+        triggerLineEffects(line, Boolean(suppressEffects));
+        syncDialogueAndControlsDom();
+        persistGameplayProgress();
+        if (state.scene4ChoiceVisible && state.lineComplete) focusActivePrimary();
       }
 
-      function triggerPasscodeShake() {
+      function activateScene4Part2Line(idx) {
+        var clamped = Math.max(0, Math.min(SCENE_4_PART_2_SCRIPT.length - 1, idx));
+        var line = SCENE_4_PART_2_SCRIPT[clamped];
+        state.scene4DialogueIndex = clamped;
+        beginTypewriterForLine(line, false, false, false);
+        triggerLineEffects(line, true);
+        syncDialogueAndControlsDom();
+        persistGameplayProgress();
+      }
+
+      function activateScene5ScriptLine(scriptArr, idx, suppressEffects) {
+        var clamped = Math.max(0, Math.min(scriptArr.length - 1, idx));
+        var line = scriptArr[clamped];
+        state.scene5DialogueIndex = clamped;
+        beginTypewriterForLine(line, false, false, false);
+        triggerLineEffects(line, Boolean(suppressEffects));
+        syncDialogueAndControlsDom();
+        persistGameplayProgress();
+      }
+
+      function triggerPasscodeShake(rowEl) {
+        var targetRow = rowEl || dom.scene3PasscodeRow;
         if (state.passcodeShakeTimeout) {
           clearTimeout(state.passcodeShakeTimeout);
           state.passcodeShakeTimeout = null;
         }
-        dom.scene3PasscodeRow.classList.remove('vn-passcode-shake');
-        void dom.scene3PasscodeRow.offsetWidth;
-        dom.scene3PasscodeRow.classList.add('vn-passcode-shake');
+        targetRow.classList.remove('vn-passcode-shake');
+        void targetRow.offsetWidth;
+        targetRow.classList.add('vn-passcode-shake');
         state.passcodeShakeTimeout = setTimeout(function () {
           state.passcodeShakeTimeout = null;
-          dom.scene3PasscodeRow.classList.remove('vn-passcode-shake');
+          targetRow.classList.remove('vn-passcode-shake');
         }, 460);
       }
 
@@ -3141,31 +4605,56 @@
           clearTimeout(state.shudderShakeTimeout);
           state.shudderShakeTimeout = null;
         }
-        dom.stageHost.classList.remove('is-shuddering');
+        if (state.bonusToastTimeout) {
+          clearTimeout(state.bonusToastTimeout);
+          state.bonusToastTimeout = null;
+        }
+        dom.stageHost.classList.remove('is-shuddering', 'is-shuddering-brief');
+        dom.scene4BonusToast.hidden = true;
 
         closeAllSubModals();
         state.rewardPopupOpen = false;
         state.hudUnlocked = false;
+        state.trustUnlocked = false;
+        state.trustPoints = 0;
+        state.scene4TrustClaimed = false;
+        state.scene4CandleBonusClaimed = false;
+        if (state.whipFlashTimeout) {
+          clearTimeout(state.whipFlashTimeout);
+          state.whipFlashTimeout = null;
+        }
         state.candleCount = 1;
         state.hintsUsedByScene = {};
         state.unlockedBadges = {};
+        state.unlockedItems = {};
+        state.unlockedTitles = {};
+        state.scene5Phase = 'opening_dialogue';
+        state.scene5DialogueIndex = 0;
+        state.scene5WrongCount = 0;
+        state.scene5RewardClaimed = false;
+        state.jadeHairpinShieldActive = false;
+        state.achQueue = [];
+        state.achToastActive = false;
+        dom.achToastBanner.hidden = true;
+        dom.trustFloatingDelta.hidden = true;
         state.scene3Phase = 'dialogue';
         state.scene3DialogueIndex = 0;
         state.isDoPaperOpen = true;
         state.passcodeError = '';
         dom.scene3PasscodeInput.value = '';
 
+        state.scene4Phase = 'part1_dialogue';
+        state.scene4DialogueIndex = 0;
+        state.scene4ChoiceVisible = false;
+        state.isChestLockOpen = true;
+        state.scene4PasscodeError = '';
+        dom.scene4PasscodeInput.value = '';
+
         state.status = 'PLAYING';
         state.activeScene = 1;
         state.scene2Phase = 'STEP1_MENU';
         state.checkedChoices = {};
         state.activeInspectionId = null;
-        state.lienAlpha = 0;
-        state.lienBrightness = 1;
-        state.lienOffsetY = 22;
-        state.quanGiaAlpha = 0;
-        state.quanGiaBrightness = 1;
-        state.quanGiaOffsetY = 22;
         state.shakeTimer = 0;
         state.shakeOffsetX = 0;
         state.shakeOffsetY = 0;
@@ -3179,13 +4668,26 @@
       function resumeFromSavedProgress(saved) {
         audioEngine.playConfirm();
         closeAllSubModals();
-        dom.stageHost.classList.remove('is-shuddering');
+        dom.stageHost.classList.remove('is-shuddering', 'is-shuddering-brief');
+        dom.scene4BonusToast.hidden = true;
         state.passcodeError = '';
+        state.scene4PasscodeError = '';
         dom.scene3PasscodeInput.value = '';
+        dom.scene4PasscodeInput.value = '';
 
         state.hudUnlocked = Boolean(saved.hudUnlocked || saved.activeScene >= 3);
+        state.trustUnlocked = Boolean(saved.trustUnlocked || saved.activeScene >= 5);
+        state.trustPoints = typeof saved.trustPoints === 'number' && isFinite(saved.trustPoints)
+          ? Math.floor(saved.trustPoints)
+          : (state.trustUnlocked ? 1 : 0);
+        state.scene4TrustClaimed = Boolean(saved.scene4TrustClaimed || state.trustUnlocked);
+        state.scene4CandleBonusClaimed = Boolean(saved.scene4CandleBonusClaimed);
+
         state.candleCount = typeof saved.candles === 'number' ? Math.max(0, Math.floor(saved.candles)) : 1;
         state.hintsUsedByScene = (saved.hintsUsedByScene && typeof saved.hintsUsedByScene === 'object') ? saved.hintsUsedByScene : {};
+        if (saved.activeScene >= 5 && state.hintsUsedByScene[5] === undefined) {
+          state.hintsUsedByScene[5] = 0;
+        }
 
         state.unlockedBadges = {};
         if (Array.isArray(saved.unlockedBadges)) {
@@ -3193,6 +4695,37 @@
             if (typeof b === 'string') state.unlockedBadges[b] = true;
           });
         }
+        state.unlockedItems = {};
+        if (Array.isArray(saved.unlockedItems)) {
+          saved.unlockedItems.forEach(function (it) {
+            if (typeof it === 'string') state.unlockedItems[it] = true;
+          });
+        }
+        state.unlockedTitles = {};
+        if (Array.isArray(saved.unlockedTitles)) {
+          saved.unlockedTitles.forEach(function (ti) {
+            if (typeof ti === 'string') state.unlockedTitles[ti] = true;
+          });
+        }
+
+        state.scene5Phase = (
+          saved.scene5Phase === 'robe_choice' ||
+          saved.scene5Phase === 'wrong1_dialogue' ||
+          saved.scene5Phase === 'wrong2_dialogue' ||
+          saved.scene5Phase === 'gameover_1' ||
+          saved.scene5Phase === 'gameover_2' ||
+          saved.scene5Phase === 'rewind_black' ||
+          saved.scene5Phase === 'correct_dialogue' ||
+          saved.scene5Phase === 'reward'
+        ) ? saved.scene5Phase : 'opening_dialogue';
+        state.scene5DialogueIndex = typeof saved.scene5DialogueIndex === 'number'
+          ? Math.max(0, Math.min(1, Math.floor(saved.scene5DialogueIndex)))
+          : 0;
+        state.scene5WrongCount = typeof saved.scene5WrongCount === 'number' && isFinite(saved.scene5WrongCount)
+          ? Math.max(0, Math.floor(saved.scene5WrongCount))
+          : 0;
+        state.scene5RewardClaimed = Boolean(saved.scene5RewardClaimed || saved.activeScene >= 6);
+        state.jadeHairpinShieldActive = Boolean(saved.jadeHairpinShieldActive);
 
         state.checkedChoices = {};
         if (Array.isArray(saved.checkedChoices)) {
@@ -3220,17 +4753,26 @@
           ? Math.max(0, Math.min(SCENE_3_DIALOGUE_SCRIPT.length - 1, Math.floor(saved.scene3DialogueIndex)))
           : 0;
 
+        state.scene4Phase =
+          saved.scene4Phase === 'part2_dialogue' || saved.scene4Phase === 'puzzle' || saved.scene4Phase === 'explanation' || saved.scene4Phase === 'reward'
+            ? saved.scene4Phase
+            : 'part1_dialogue';
+
+        var maxS4 = state.scene4Phase === 'part2_dialogue' ? SCENE_4_PART_2_SCRIPT.length - 1 : SCENE_4_PART_1_SCRIPT.length - 1;
+        state.scene4DialogueIndex = typeof saved.scene4DialogueIndex === 'number'
+          ? Math.max(0, Math.min(maxS4, Math.floor(saved.scene4DialogueIndex)))
+          : 0;
+        state.scene4ChoiceVisible = Boolean(saved.scene4ChoiceVisible);
+        state.isChestLockOpen = !saved.chestLockHidden;
+
         state.isDoPaperOpen = !saved.paperHidden;
-        state.rewardPopupOpen = saved.activeScene === 3 && state.scene3Phase === 'reward';
+        var isS3Rew = saved.activeScene === 3 && state.scene3Phase === 'reward';
+        var isS4Rew = saved.activeScene === 4 && state.scene4Phase === 'reward';
+        state.rewardBadgeId = isS4Rew ? 'huyhieu_giahuanca' : 'huyhieu_biatiensi';
+        state.rewardPopupOpen = isS3Rew || isS4Rew;
 
         state.status = 'PLAYING';
         state.activeScene = saved.activeScene;
-        state.lienAlpha = 0;
-        state.lienBrightness = 1;
-        state.lienOffsetY = 16;
-        state.quanGiaAlpha = 0;
-        state.quanGiaBrightness = 1;
-        state.quanGiaOffsetY = 16;
         state.shakeTimer = 0;
         state.shakeOffsetX = 0;
         state.shakeOffsetY = 0;
@@ -3240,35 +4782,44 @@
 
         if (state.activeScene === 1) {
           var s1Idx = typeof saved.scene1LineIndex === 'number' ? Math.floor(saved.scene1LineIndex) : 0;
-          state.lienAlpha = 1;
-          state.quanGiaAlpha = s1Idx >= 3 ? 1 : 0;
           activateScene1Line(s1Idx, Boolean(saved.scene1ChoiceVisible));
         } else if (state.activeScene === 2) {
           state.choiceVisible = false;
           if (state.scene2Phase === 'STEP1_INSPECT' && state.activeInspectionId && SCENE_2_INSPECTIONS[state.activeInspectionId]) {
-            state.lienAlpha = 1;
-            beginTypewriterForLine(SCENE_2_INSPECTIONS[state.activeInspectionId], false, false);
+            beginTypewriterForLine(SCENE_2_INSPECTIONS[state.activeInspectionId], false, false, false);
           } else if (state.scene2Phase === 'STEP2_SHUDDER') {
-            state.lienAlpha = 1;
-            beginTypewriterForLine(SCENE_2_SHUDDER_LINE, false, false);
+            beginTypewriterForLine(SCENE_2_SHUDDER_LINE, false, false, false);
           } else if (state.scene2Phase === 'STEP2_PAPER') {
-            state.lienAlpha = 1;
-            beginTypewriterForLine(SCENE_2_DO_PAPER_LINE, false, false);
+            beginTypewriterForLine(SCENE_2_DO_PAPER_LINE, false, false, false);
           } else {
             state.scene2Phase = 'STEP1_MENU';
           }
         } else if (state.activeScene === 3) {
           state.choiceVisible = false;
           if (state.scene3Phase === 'dialogue') {
-            state.lienAlpha = 1;
-            state.lienBrightness = 1;
             activateScene3DialogueLine(state.scene3DialogueIndex);
-          } else {
-            state.lienAlpha = 0;
-            state.lienBrightness = 0;
-            if (state.scene3Phase === 'reward') {
-              state.unlockedBadges.huyhieu_biatiensi = true;
-            }
+          } else if (state.scene3Phase === 'reward') {
+            state.unlockedBadges.huyhieu_biatiensi = true;
+          }
+        } else if (state.activeScene === 4) {
+          state.choiceVisible = false;
+          if (state.scene4Phase === 'part1_dialogue') {
+            activateScene4Part1Line(state.scene4DialogueIndex, state.scene4ChoiceVisible, false);
+          } else if (state.scene4Phase === 'part2_dialogue') {
+            activateScene4Part2Line(state.scene4DialogueIndex);
+          } else if (state.scene4Phase === 'reward') {
+            state.unlockedBadges.huyhieu_giahuanca = true;
+          }
+        } else if (state.activeScene === 5) {
+          state.choiceVisible = false;
+          if (state.scene5Phase === 'opening_dialogue') {
+            activateScene5ScriptLine(SCENE_5_OPENING_SCRIPT, state.scene5DialogueIndex, true);
+          } else if (state.scene5Phase === 'wrong1_dialogue') {
+            activateScene5ScriptLine(SCENE_5_WRONG_1_SCRIPT, state.scene5DialogueIndex, true);
+          } else if (state.scene5Phase === 'wrong2_dialogue') {
+            activateScene5ScriptLine(SCENE_5_WRONG_2_SCRIPT, state.scene5DialogueIndex, true);
+          } else if (state.scene5Phase === 'correct_dialogue') {
+            activateScene5ScriptLine([SCENE_5_CORRECT_LINE], 0, true);
           }
         } else {
           state.choiceVisible = false;
@@ -3301,7 +4852,12 @@
           clearTimeout(state.passcodeShakeTimeout);
           state.passcodeShakeTimeout = null;
         }
-        dom.stageHost.classList.remove('is-shuddering');
+        if (state.bonusToastTimeout) {
+          clearTimeout(state.bonusToastTimeout);
+          state.bonusToastTimeout = null;
+        }
+        dom.stageHost.classList.remove('is-shuddering', 'is-shuddering-brief');
+        dom.scene4BonusToast.hidden = true;
 
         clearSavedProgress();
         closeAllSubModals();
@@ -3315,15 +4871,46 @@
         state.activeInspectionId = null;
         state.scene3Phase = 'dialogue';
         state.scene3DialogueIndex = 0;
+        state.scene4Phase = 'part1_dialogue';
+        state.scene4DialogueIndex = 0;
+        state.scene4ChoiceVisible = false;
+        state.isChestLockOpen = true;
+        state.scene4PasscodeError = '';
+        dom.scene4PasscodeInput.value = '';
         state.hudUnlocked = false;
+        state.trustUnlocked = false;
+        state.trustPoints = 0;
+        state.scene4TrustClaimed = false;
+        state.scene4CandleBonusClaimed = false;
         state.isDoPaperOpen = true;
         state.passcodeError = '';
         dom.scene3PasscodeInput.value = '';
+        if (state.whipFlashTimeout) {
+          clearTimeout(state.whipFlashTimeout);
+          state.whipFlashTimeout = null;
+        }
+        if (state.achHoldTimeout) {
+          clearTimeout(state.achHoldTimeout);
+          state.achHoldTimeout = null;
+        }
+        if (state.achExitTimeout) {
+          clearTimeout(state.achExitTimeout);
+          state.achExitTimeout = null;
+        }
         state.candleCount = 1;
         state.hintsUsedByScene = {};
         state.unlockedBadges = {};
-        state.lienAlpha = 0;
-        state.quanGiaAlpha = 0;
+        state.unlockedItems = {};
+        state.unlockedTitles = {};
+        state.scene5Phase = 'opening_dialogue';
+        state.scene5DialogueIndex = 0;
+        state.scene5WrongCount = 0;
+        state.scene5RewardClaimed = false;
+        state.jadeHairpinShieldActive = false;
+        state.achQueue = [];
+        state.achToastActive = false;
+        dom.achToastBanner.hidden = true;
+        dom.trustFloatingDelta.hidden = true;
 
         syncScreensDom();
         focusActivePrimary();
@@ -3339,7 +4926,7 @@
           clearTimeout(state.shudderShakeTimeout);
           state.shudderShakeTimeout = null;
         }
-        dom.stageHost.classList.remove('is-shuddering');
+        dom.stageHost.classList.remove('is-shuddering', 'is-shuddering-brief');
 
         closeAllSubModals();
         state.rewardPopupOpen = false;
@@ -3349,12 +4936,6 @@
         state.checkedChoices = {};
         state.activeInspectionId = null;
         state.choiceVisible = false;
-
-        state.quanGiaAlpha = 0;
-        state.quanGiaBrightness = 0;
-        state.lienAlpha = 0;
-        state.lienBrightness = 1;
-        state.lienOffsetY = 16;
         state.shakeTimer = 0;
         state.shakeOffsetX = 0;
         state.shakeOffsetY = 0;
@@ -3374,7 +4955,7 @@
           clearTimeout(state.shudderShakeTimeout);
           state.shudderShakeTimeout = null;
         }
-        dom.stageHost.classList.remove('is-shuddering');
+        dom.stageHost.classList.remove('is-shuddering', 'is-shuddering-brief');
 
         closeAllSubModals();
         state.rewardPopupOpen = false;
@@ -3387,19 +4968,81 @@
         state.passcodeError = '';
         dom.scene3PasscodeInput.value = '';
         state.choiceVisible = false;
-
-        // Show Liên for Phase 1 thought sequence; strictly hide Quản gia Lâm
-        state.quanGiaAlpha = 0;
-        state.quanGiaBrightness = 0;
-        state.lienAlpha = 0.25;
-        state.lienBrightness = 1;
-        state.lienOffsetY = 14;
         state.shakeTimer = 0;
         state.shakeOffsetX = 0;
         state.shakeOffsetY = 0;
         dom.dialogueLayer4.style.transform = 'translate(0px, 0px)';
 
         activateScene3DialogueLine(0);
+        syncScreensDom();
+        focusActivePrimary();
+      }
+
+      function enterScene5() {
+        if (state.whipFlashTimeout) {
+          clearTimeout(state.whipFlashTimeout);
+          state.whipFlashTimeout = null;
+        }
+        closeAllSubModals();
+        state.rewardPopupOpen = false;
+        state.status = 'PLAYING';
+        state.activeScene = 5;
+        state.scene5Phase = 'opening_dialogue';
+        state.scene5DialogueIndex = 0;
+        state.hudUnlocked = true;
+        state.trustUnlocked = true;
+        state.hintsUsedByScene[5] = 0;
+        activateScene5ScriptLine(SCENE_5_OPENING_SCRIPT, 0, true);
+        syncScreensDom();
+        focusActivePrimary();
+      }
+
+      function handleScene5SelectRobe(choiceNum) {
+        if (state.status !== 'PLAYING' || state.activeScene !== 5 || state.scene5Phase !== 'robe_choice') return;
+        if (choiceNum === 1 || choiceNum === 2) {
+          state.scene5WrongCount += 1;
+          var usedS5 = state.hintsUsedByScene[5] || 0;
+          if (usedS5 >= 3) {
+            unlockAchievementTitle('pha_gia_chi_tu');
+          }
+          state.scene5Phase = choiceNum === 1 ? 'wrong1_dialogue' : 'wrong2_dialogue';
+          var scr = choiceNum === 1 ? SCENE_5_WRONG_1_SCRIPT : SCENE_5_WRONG_2_SCRIPT;
+          activateScene5ScriptLine(scr, 0, false);
+          syncScreensDom();
+          return;
+        }
+        audioEngine.playConfirm();
+        state.scene5Phase = 'correct_dialogue';
+        activateScene5ScriptLine([SCENE_5_CORRECT_LINE], 0, false);
+        syncScreensDom();
+      }
+
+      function enterScene4Part1() {
+        closeAllSubModals();
+        state.rewardPopupOpen = false;
+        state.status = 'PLAYING';
+        state.activeScene = 4;
+        state.scene4Phase = 'part1_dialogue';
+        state.scene4DialogueIndex = 0;
+        state.scene4ChoiceVisible = false;
+        state.isChestLockOpen = true;
+        state.scene4PasscodeError = '';
+        dom.scene4PasscodeInput.value = '';
+        state.hudUnlocked = true;
+        if (state.hintsUsedByScene[4] === undefined) {
+          state.hintsUsedByScene[4] = 0;
+        }
+        activateScene4Part1Line(0, false, false);
+        syncScreensDom();
+        focusActivePrimary();
+      }
+
+      function handleScene4RunToChest() {
+        if (state.status !== 'PLAYING' || state.activeScene !== 4) return;
+        audioEngine.playConfirm();
+        state.scene4ChoiceVisible = false;
+        state.scene4Phase = 'part2_dialogue';
+        activateScene4Part2Line(0);
         syncScreensDom();
         focusActivePrimary();
       }
@@ -3412,12 +5055,8 @@
         audioEngine.playConfirm();
         state.activeInspectionId = choiceId;
         state.scene2Phase = 'STEP1_INSPECT';
-        state.lienAlpha = 0.25;
-        state.lienBrightness = 1;
-        state.lienOffsetY = 14;
-        state.quanGiaAlpha = 0;
 
-        beginTypewriterForLine(item, false, false);
+        beginTypewriterForLine(item, false, false, false);
         syncScreensDom();
         if (state.lineComplete) focusActivePrimary();
       }
@@ -3431,14 +5070,10 @@
 
         if (countCheckedChoices() >= 3) {
           audioEngine.playWoodStaff();
-          triggerStageShudderShake();
+          triggerStageShudderShake(false);
           state.scene2Phase = 'STEP2_SHUDDER';
-          state.lienAlpha = 1;
-          state.lienBrightness = 1;
-          state.lienOffsetY = 0;
-          state.quanGiaAlpha = 0;
 
-          beginTypewriterForLine(SCENE_2_SHUDDER_LINE, false, false);
+          beginTypewriterForLine(SCENE_2_SHUDDER_LINE, false, false, false);
           syncScreensDom();
           if (state.lineComplete) focusActivePrimary();
           return;
@@ -3446,8 +5081,6 @@
 
         audioEngine.playClick();
         state.scene2Phase = 'STEP1_MENU';
-        state.lienAlpha = 0;
-        state.quanGiaAlpha = 0;
         syncScreensDom();
         focusActivePrimary();
       }
@@ -3456,16 +5089,12 @@
         if (state.status !== 'PLAYING' || state.activeScene !== 2 || state.scene2Phase !== 'STEP2_SHUDDER') return;
         audioEngine.playConfirm();
         state.scene2Phase = 'STEP2_PAPER';
-        state.lienAlpha = 1;
-        state.lienBrightness = 1;
-        state.quanGiaAlpha = 0;
 
-        beginTypewriterForLine(SCENE_2_DO_PAPER_LINE, false, false);
+        beginTypewriterForLine(SCENE_2_DO_PAPER_LINE, false, false, false);
         syncScreensDom();
         if (state.lineComplete) focusActivePrimary();
       }
 
-      // Scene 3 Phase 2 -> Phase 3 ('explanation') on '1484'
       function submitScene3Passcode() {
         if (state.status !== 'PLAYING' || state.activeScene !== 3 || state.scene3Phase !== 'puzzle') return;
         var val = (dom.scene3PasscodeInput.value || '').trim();
@@ -3481,16 +5110,46 @@
         audioEngine.playError();
         state.passcodeError = 'Mật mã chưa chính xác, hãy suy ngẫm lại bài vè!';
         syncDialogueAndControlsDom();
-        triggerPasscodeShake();
+        triggerPasscodeShake(dom.scene3PasscodeRow);
       }
 
-      // Scene 3 Phase 3 ('explanation') -> Claim Reward ('reward')
-      function handleClaimScene3Reward() {
-        if (state.status !== 'PLAYING' || state.activeScene !== 3) return;
+      function submitScene4Passcode() {
+        if (state.status !== 'PLAYING' || state.activeScene !== 4 || state.scene4Phase !== 'puzzle') return;
+        var val = (dom.scene4PasscodeInput.value || '').trim();
+        if (val === '35241') {
+          audioEngine.playVictory();
+          state.scene4PasscodeError = '';
+          state.scene4Phase = 'explanation';
+          syncScreensDom();
+          focusActivePrimary();
+          return;
+        }
+
+        audioEngine.playError();
+        state.scene4PasscodeError = 'Mật mã chưa chính xác, hãy đối chiếu lại thứ tự Ngũ Thường!';
+        syncDialogueAndControlsDom();
+        triggerPasscodeShake(dom.scene4PasscodeRow);
+      }
+
+      function handleClaimExplanationReward() {
+        if (state.status !== 'PLAYING') return;
         audioEngine.playChime();
-        state.unlockedBadges.huyhieu_biatiensi = true;
-        state.scene3Phase = 'reward';
-        state.rewardPopupOpen = true;
+        if (state.activeScene === 4) {
+          state.unlockedBadges.huyhieu_giahuanca = true;
+          state.trustUnlocked = true;
+          if (!state.scene4TrustClaimed) {
+            state.scene4TrustClaimed = true;
+            state.trustPoints = Math.max(1, state.trustPoints + 1);
+          }
+          state.rewardBadgeId = 'huyhieu_giahuanca';
+          state.scene4Phase = 'reward';
+          state.rewardPopupOpen = true;
+        } else {
+          state.unlockedBadges.huyhieu_biatiensi = true;
+          state.rewardBadgeId = 'huyhieu_biatiensi';
+          state.scene3Phase = 'reward';
+          state.rewardPopupOpen = true;
+        }
         syncScreensDom();
         focusActivePrimary();
       }
@@ -3543,6 +5202,12 @@
           state.lineComplete = true;
           if (state.activeScene === 1 && state.lineIndex === SCENE_1_SCRIPT.length - 1) {
             state.choiceVisible = true;
+          } else if (
+            state.activeScene === 4 &&
+            state.scene4Phase === 'part1_dialogue' &&
+            state.scene4DialogueIndex === SCENE_4_PART_1_SCRIPT.length - 1
+          ) {
+            state.scene4ChoiceVisible = true;
           }
           syncDialogueAndControlsDom();
           persistGameplayProgress();
@@ -3550,7 +5215,100 @@
           return;
         }
 
-        // Scene 3 Phase 1 ('dialogue'): advance through 4 thought lines -> transition to Phase 2 ('puzzle')
+        if (state.activeScene === 5) {
+          if (state.scene5Phase === 'opening_dialogue') {
+            if (state.scene5DialogueIndex < SCENE_5_OPENING_SCRIPT.length - 1) {
+              audioEngine.playClick();
+              activateScene5ScriptLine(SCENE_5_OPENING_SCRIPT, state.scene5DialogueIndex + 1, false);
+              return;
+            }
+            audioEngine.playConfirm();
+            state.scene5Phase = 'robe_choice';
+            syncScreensDom();
+            focusActivePrimary();
+            return;
+          }
+
+          if (state.scene5Phase === 'wrong1_dialogue' || state.scene5Phase === 'wrong2_dialogue') {
+            var wScript = state.scene5Phase === 'wrong1_dialogue' ? SCENE_5_WRONG_1_SCRIPT : SCENE_5_WRONG_2_SCRIPT;
+            if (state.scene5DialogueIndex < wScript.length - 1) {
+              audioEngine.playClick();
+              activateScene5ScriptLine(wScript, state.scene5DialogueIndex + 1, false);
+              return;
+            }
+            var branch = state.scene5Phase === 'wrong1_dialogue' ? 1 : 2;
+            state.pendingGameOverBranch = branch;
+            audioEngine.playWhipStrike();
+            state.scene5Phase = 'whip_flash';
+            syncScreensDom();
+            if (state.whipFlashTimeout) clearTimeout(state.whipFlashTimeout);
+            state.whipFlashTimeout = setTimeout(function () {
+              state.whipFlashTimeout = null;
+              audioEngine.playDefeat();
+              state.scene5Phase = branch === 1 ? 'gameover_1' : 'gameover_2';
+              syncScreensDom();
+              focusActivePrimary();
+            }, 1300);
+            return;
+          }
+
+          if (state.scene5Phase === 'correct_dialogue') {
+            audioEngine.playVictory();
+            if (!state.scene5RewardClaimed) {
+              state.scene5RewardClaimed = true;
+              adjustTrust(5);
+              state.unlockedItems.item_thebai = true;
+              state.unlockedBadges.huyhieu_phucsac = true;
+              var hintsS5 = state.hintsUsedByScene[5] || 0;
+              if (hintsS5 === 0) {
+                state.unlockedItems.item_tramngocbich = true;
+                state.jadeHairpinShieldActive = true;
+                unlockAchievementTitle('bac_thay_nhap_the');
+              }
+              if (state.scene5WrongCount >= 5) {
+                unlockAchievementTitle('vua_li_don');
+              }
+            }
+            state.scene5Phase = 'reward';
+            syncScreensDom();
+            focusActivePrimary();
+            return;
+          }
+          return;
+        }
+
+        if (state.activeScene === 4) {
+          if (state.scene4Phase === 'part1_dialogue') {
+            if (state.scene4DialogueIndex < SCENE_4_PART_1_SCRIPT.length - 1) {
+              audioEngine.playClick();
+              activateScene4Part1Line(state.scene4DialogueIndex + 1, false, false);
+              return;
+            }
+            if (!state.scene4ChoiceVisible) {
+              audioEngine.playClick();
+              state.scene4ChoiceVisible = true;
+              syncDialogueAndControlsDom();
+              persistGameplayProgress();
+            }
+            focusActivePrimary();
+            return;
+          }
+          if (state.scene4Phase === 'part2_dialogue') {
+            if (state.scene4DialogueIndex < SCENE_4_PART_2_SCRIPT.length - 1) {
+              audioEngine.playClick();
+              activateScene4Part2Line(state.scene4DialogueIndex + 1);
+              return;
+            }
+            audioEngine.playConfirm();
+            state.scene4Phase = 'puzzle';
+            state.isChestLockOpen = true;
+            syncScreensDom();
+            focusActivePrimary();
+            return;
+          }
+          return;
+        }
+
         if (state.activeScene === 3) {
           if (state.scene3Phase !== 'dialogue') return;
           if (state.scene3DialogueIndex < SCENE_3_DIALOGUE_SCRIPT.length - 1) {
@@ -3561,9 +5319,6 @@
           audioEngine.playConfirm();
           state.scene3Phase = 'puzzle';
           state.isDoPaperOpen = true;
-          state.lienAlpha = 0;
-          state.lienBrightness = 0;
-          state.quanGiaAlpha = 0;
           syncScreensDom();
           focusActivePrimary();
           return;
@@ -3715,7 +5470,40 @@
         syncScreensDom();
         focusActivePrimary();
       });
-      bindTouchSafeButton(dom.btnScene3ClaimReward, handleClaimScene3Reward);
+      bindTouchSafeButton(dom.btnScene3ClaimReward, handleClaimExplanationReward);
+
+      // Scene 4 Controls
+      bindTouchSafeButton(dom.scene4RunChestBtn, handleScene4RunToChest);
+      dom.scene4PasscodeInput.addEventListener('input', function () {
+        var clean = dom.scene4PasscodeInput.value.replace(/\D/g, '').slice(0, 5);
+        if (dom.scene4PasscodeInput.value !== clean) {
+          dom.scene4PasscodeInput.value = clean;
+        }
+        if (state.scene4PasscodeError) {
+          state.scene4PasscodeError = '';
+          syncDialogueAndControlsDom();
+        }
+      });
+      dom.scene4PasscodeInput.addEventListener('keydown', function (e) {
+        e.stopPropagation();
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          submitScene4Passcode();
+        }
+      });
+      bindTouchSafeButton(dom.btnScene4Confirm, submitScene4Passcode);
+      bindTouchSafeButton(dom.btnScene4PutAway, function () {
+        audioEngine.playClick();
+        state.isChestLockOpen = false;
+        syncScreensDom();
+        focusActivePrimary();
+      });
+      bindTouchSafeButton(dom.scene4ReopenLockBtn, function () {
+        audioEngine.playConfirm();
+        state.isChestLockOpen = true;
+        syncScreensDom();
+        focusActivePrimary();
+      });
 
       // Top-Right HUD Buttons ("Gợi ý" & "Bộ sưu tập")
       bindTouchSafeButton(dom.btnHudHint, function () {
@@ -3747,9 +5535,10 @@
         focusActivePrimary();
       });
       bindTouchSafeButton(dom.btnXinGoiY, function () {
-        var sceneKey = state.activeScene >= 3 ? 3 : state.activeScene;
+        var sceneKey = getHintSceneKey();
+        var maxH = getMaxHintsForScene(sceneKey);
         var used = state.hintsUsedByScene[sceneKey] || 0;
-        if (used >= 3) {
+        if (used >= maxH) {
           audioEngine.playError();
           return;
         }
@@ -3759,11 +5548,12 @@
         focusActivePrimary();
       });
       bindTouchSafeButton(dom.btnReviewHints, function () {
-        var sceneKey = state.activeScene >= 3 ? 3 : state.activeScene;
+        var sceneKey = getHintSceneKey();
         var used = state.hintsUsedByScene[sceneKey] || 0;
         if (used <= 0) return;
         audioEngine.playClick();
-        var list = SCENE_3_HINTS.slice(0, used);
+        var pool = SCENE_HINTS_BY_SCENE[sceneKey] || SCENE_HINTS_BY_SCENE[4];
+        var list = pool.slice(0, used);
         state.activeHintText = list.length > 1 ? ('• ' + list.join('\n\n• ')) : list[0];
         syncScreensDom();
         focusActivePrimary();
@@ -3775,15 +5565,18 @@
         focusActivePrimary();
       });
       bindTouchSafeButton(dom.btnConfirmYes, function () {
-        var sceneKey = state.activeScene >= 3 ? 3 : state.activeScene;
+        var sceneKey = getHintSceneKey();
+        var maxH = getMaxHintsForScene(sceneKey);
         var used = state.hintsUsedByScene[sceneKey] || 0;
-        if (used >= 3 || state.candleCount <= 0) {
+        var cost = getHintCost(sceneKey, used);
+        if (used >= maxH || state.candleCount < cost) {
           audioEngine.playError();
           return;
         }
-        var hintText = SCENE_3_HINTS[used] || SCENE_3_HINTS[0];
+        var pool = SCENE_HINTS_BY_SCENE[sceneKey] || SCENE_HINTS_BY_SCENE[4];
+        var hintText = pool[used] || pool[0];
         audioEngine.playChime();
-        state.candleCount = Math.max(0, state.candleCount - 1);
+        state.candleCount = Math.max(0, state.candleCount - cost);
         state.hintsUsedByScene[sceneKey] = used + 1;
         state.hintView = 'MAIN';
         state.activeHintText = hintText;
@@ -3844,9 +5637,59 @@
         syncScreensDom();
         focusActivePrimary();
       };
+      var openGiaDetail = function () {
+        audioEngine.playClick();
+        dom.badgeDetailTitle.textContent = 'Gia Huấn Ca Của Bậc Nho Sĩ';
+        dom.badgeDetailBody.textContent = GIA_HUAN_CA_DETAIL;
+        state.badgeDetailOpen = true;
+        syncScreensDom();
+        focusActivePrimary();
+      };
+      var openDetailModal = function (titleText, bodyText) {
+        audioEngine.playClick();
+        dom.badgeDetailTitle.textContent = titleText;
+        dom.badgeDetailBody.textContent = bodyText;
+        state.badgeDetailOpen = true;
+        syncScreensDom();
+        focusActivePrimary();
+      };
+      var openCurrentRewardDetail = function () {
+        if (state.rewardBadgeId === 'huyhieu_giahuanca') openGiaDetail();
+        else openBiaDetail();
+      };
       bindTouchSafeButton(dom.btnCollectionBiaTienSi, openBiaDetail);
-      bindTouchSafeButton(dom.btnRewardBadgeCard, openBiaDetail);
-      bindTouchSafeButton(dom.btnRewardDetailLink, openBiaDetail);
+      bindTouchSafeButton(dom.btnCollectionGiaHuanCa, openGiaDetail);
+      bindTouchSafeButton(dom.btnCollectionPhucSac, function () {
+        openDetailModal('Cẩm Nang Phục Sắc Đại Việt', PHUC_SAC_DETAIL);
+      });
+      bindTouchSafeButton(dom.btnCollectionTheBai, function () {
+        openDetailModal('Thẻ Bài Gia Nhân Phủ Quan', THE_BAI_DETAIL);
+      });
+      bindTouchSafeButton(dom.btnCollectionTramNgoc, function () {
+        openDetailModal('Chiếc Trâm Cài Ngọc Bích', TRAM_NGOC_DETAIL);
+      });
+      bindTouchSafeButton(dom.btnColTabItems, function () {
+        audioEngine.playClick();
+        state.collectionMainTab = 'items';
+        syncScreensDom();
+      });
+      bindTouchSafeButton(dom.btnColTabTitles, function () {
+        audioEngine.playClick();
+        state.collectionMainTab = 'titles';
+        syncScreensDom();
+      });
+      bindTouchSafeButton(dom.btnSubtabHonor, function () {
+        audioEngine.playClick();
+        state.collectionTitleSubTab = 'honor';
+        syncScreensDom();
+      });
+      bindTouchSafeButton(dom.btnSubtabClown, function () {
+        audioEngine.playClick();
+        state.collectionTitleSubTab = 'clown';
+        syncScreensDom();
+      });
+      bindTouchSafeButton(dom.btnRewardBadgeCard, openCurrentRewardDetail);
+      bindTouchSafeButton(dom.btnRewardDetailLink, openCurrentRewardDetail);
       bindTouchSafeButton(dom.btnCloseBadgeDetail, function () {
         audioEngine.playClick();
         state.badgeDetailOpen = false;
@@ -3854,27 +5697,66 @@
         focusActivePrimary();
       });
 
-      // Reward Popup Continue -> Scene 4 Placeholder
+      // Reward Popup: Scene 3 -> Direct Scene 4 Part 1 Line 1; Scene 4 ("Mở nắp rương y phục ra") -> Direct Scene 5!
       bindTouchSafeButton(dom.btnRewardContinue, function () {
         audioEngine.playConfirm();
         state.rewardPopupOpen = false;
         state.badgeDetailOpen = false;
-        state.activeScene = 4;
-        state.lienAlpha = 0;
-        state.quanGiaAlpha = 0;
+        if (state.activeScene === 3) {
+          enterScene4Part1();
+          return;
+        }
+        enterScene5();
+      });
+
+      // Scene 5 Controls
+      bindTouchSafeButton(dom.btnS5Robe1, function () { handleScene5SelectRobe(1); });
+      bindTouchSafeButton(dom.btnS5Robe2, function () { handleScene5SelectRobe(2); });
+      bindTouchSafeButton(dom.btnS5Robe3, function () { handleScene5SelectRobe(3); });
+      bindTouchSafeButton(dom.btnS5Rewind, function () {
+        if (state.status !== 'PLAYING' || state.activeScene !== 5) return;
+        adjustTrust(-5);
+        state.scene5Phase = 'rewind_black';
+        syncScreensDom();
+        focusActivePrimary();
+      });
+      bindTouchSafeButton(dom.btnS5Retry, function () {
+        if (state.status !== 'PLAYING' || state.activeScene !== 5) return;
+        audioEngine.playConfirm();
+        state.scene5Phase = 'robe_choice';
+        syncScreensDom();
+        focusActivePrimary();
+      });
+      bindTouchSafeButton(dom.btnS5RewPhucSac, function () {
+        openDetailModal('Cẩm Nang Phục Sắc Đại Việt', PHUC_SAC_DETAIL);
+      });
+      bindTouchSafeButton(dom.btnS5RewDetailLink, function () {
+        openDetailModal('Cẩm Nang Phục Sắc Đại Việt', PHUC_SAC_DETAIL);
+      });
+      bindTouchSafeButton(dom.btnS5RewTheBai, function () {
+        openDetailModal('Thẻ Bài Gia Nhân Phủ Quan', THE_BAI_DETAIL);
+      });
+      bindTouchSafeButton(dom.btnS5RewTramNgoc, function () {
+        openDetailModal('Chiếc Trâm Cài Ngọc Bích', TRAM_NGOC_DETAIL);
+      });
+      bindTouchSafeButton(dom.btnS5Finish, function () {
+        if (state.status !== 'PLAYING' || state.activeScene !== 5) return;
+        audioEngine.playConfirm();
+        closeAllSubModals();
+        state.activeScene = 6;
         syncScreensDom();
         focusActivePrimary();
       });
 
-      // Scene 4 Placeholder Controls
-      bindTouchSafeButton(dom.btnScene4Home, function () {
+      // Scene 5 Prep Controls
+      bindTouchSafeButton(dom.btnScene5Home, function () {
         audioEngine.playClick();
         closeAllSubModals();
         state.status = 'START';
         syncScreensDom();
         focusActivePrimary();
       });
-      bindTouchSafeButton(dom.btnScene4Replay, startFreshScene1);
+      bindTouchSafeButton(dom.btnScene5Replay, startFreshScene1);
 
       // Tap/click anywhere on dialogue stage or dialogue text to reveal/advance
       dom.dialogueUi.addEventListener('pointerup', function (e) {
@@ -3907,6 +5789,11 @@
         if (!dom.menuModal.hidden) return dom.menuModal;
         if (!dom.scene3ExplanationModal.hidden) return dom.scene3ExplanationModal;
         if (!dom.rewardPopupModal.hidden) return dom.rewardPopupModal;
+        if (!dom.scene5RobeChoices.hidden) return dom.scene5RobeChoices;
+        if (!dom.scene5GameoverScreen.hidden) return dom.scene5GameoverScreen;
+        if (!dom.scene5RewindScreen.hidden) return dom.scene5RewindScreen;
+        if (!dom.scene5RewardScreen.hidden) return dom.scene5RewardScreen;
+        if (!dom.scene5PrepScreen.hidden) return dom.scene5PrepScreen;
         if (!dom.startScreen.hidden) return dom.startScreen;
         return null;
       }
@@ -3967,7 +5854,7 @@
           } else if (
             state.status === 'PLAYING' &&
             !state.rewardPopupOpen &&
-            !(state.activeScene === 3 && state.scene3Phase === 'explanation')
+            !isExplanationOpenNow()
           ) {
             e.preventDefault();
             audioEngine.playClick();
@@ -4080,53 +5967,18 @@
               if (state.activeScene === 1 && state.lineIndex === SCENE_1_SCRIPT.length - 1) {
                 state.choiceVisible = true;
                 persistGameplayProgress();
+              } else if (
+                state.activeScene === 4 &&
+                state.scene4Phase === 'part1_dialogue' &&
+                state.scene4DialogueIndex === SCENE_4_PART_1_SCRIPT.length - 1
+              ) {
+                state.scene4ChoiceVisible = true;
+                persistGameplayProgress();
               }
               focusActivePrimary();
             }
             syncDialogueAndControlsDom();
           }
-        }
-
-        var lerp = Math.min(1, CONFIG.portraitTransitionSpeed * dt);
-
-        if (state.activeScene === 1) {
-          var line = SCENE_1_SCRIPT[state.lineIndex];
-          var isLien = line && line.spriteId === 'sprite_lien_hoodie';
-          var isQuanGia = line && line.spriteId === 'sprite_quan_gia_lam';
-          var quanGiaRevealed = state.lineIndex >= 3;
-          var dim = CONFIG.inactivePortraitBrightness;
-
-          state.lienAlpha += (1 - state.lienAlpha) * lerp;
-          state.lienBrightness += ((isLien ? 1 : dim) - state.lienBrightness) * lerp;
-          state.lienOffsetY += ((isLien ? 0 : 12) - state.lienOffsetY) * lerp;
-
-          state.quanGiaAlpha += ((quanGiaRevealed ? 1 : 0) - state.quanGiaAlpha) * lerp;
-          state.quanGiaBrightness += ((isQuanGia ? 1 : dim * 0.85) - state.quanGiaBrightness) * lerp;
-          state.quanGiaOffsetY += ((isQuanGia ? 0 : 14) - state.quanGiaOffsetY) * lerp;
-        } else if (state.activeScene === 2) {
-          state.quanGiaAlpha = 0;
-          state.quanGiaBrightness = 0;
-
-          if (state.scene2Phase === 'STEP1_MENU') {
-            state.lienAlpha = 0;
-          } else {
-            state.lienAlpha += (1 - state.lienAlpha) * lerp;
-            state.lienBrightness += (1 - state.lienBrightness) * lerp;
-            state.lienOffsetY += (0 - state.lienOffsetY) * lerp;
-          }
-        } else if (state.activeScene === 3 && state.scene3Phase === 'dialogue') {
-          // Scene 3 Phase 1 ('dialogue'): Liên speaks 4 thought lines; Quản gia Lâm strictly hidden
-          state.quanGiaAlpha = 0;
-          state.quanGiaBrightness = 0;
-          state.lienAlpha += (1 - state.lienAlpha) * lerp;
-          state.lienBrightness += (1 - state.lienBrightness) * lerp;
-          state.lienOffsetY += (0 - state.lienOffsetY) * lerp;
-        } else {
-          // Scene 3 Phase 2+ & Scene 4: Strictly hide Quản gia Lâm AND hide Liên
-          state.quanGiaAlpha = 0;
-          state.quanGiaBrightness = 0;
-          state.lienAlpha = 0;
-          state.lienBrightness = 0;
         }
 
         if (state.shakeTimer > 0) {
@@ -4161,8 +6013,11 @@
           return;
         }
 
-        // LAYER 1 (Back): Dynamic Scene Background (`scene1_background` or `nencanh2`)
-        var bgConfig = SCENE_BACKGROUND_REGISTRY[state.activeScene] || SCENE_BACKGROUND_REGISTRY[1];
+        // LAYER 1 (Back): Dynamic Scene Background (`scene1_background`, `nencanh2`, `nencanh4_ruong`, or `nencanh5_ruongao`)
+        var isChestBg = state.activeScene === 4 && state.scene4Phase !== 'part1_dialogue';
+        var isS5OpenChestBg = state.activeScene >= 5;
+        var bgKey = isS5OpenChestBg ? 5 : (isChestBg ? '4_ruong' : state.activeScene);
+        var bgConfig = SCENE_BACKGROUND_REGISTRY[bgKey] || SCENE_BACKGROUND_REGISTRY[4] || SCENE_BACKGROUND_REGISTRY[1];
         var sceneBg = loadedAssets[bgConfig.key];
         if (sceneBg) {
           ctx.drawImage(sceneBg, 0, 0, W, H);
@@ -4173,7 +6028,31 @@
 
         // Atmospheric lighting & dust motes
         ctx.save();
-        if (state.activeScene >= 2) {
+        if (isS5OpenChestBg) {
+          var s5LampX = W * 0.703;
+          var s5LampY = H * 0.365;
+          var s5Pulse = 1 + Math.sin(state.elapsedTime * 8.5) * 0.07;
+          var s5GlowR = Math.max(10, 145 * s5Pulse);
+          var s5Glow = ctx.createRadialGradient(s5LampX, s5LampY, 4, s5LampX, s5LampY, s5GlowR);
+          s5Glow.addColorStop(0, 'rgba(255, 194, 88, 0.24)');
+          s5Glow.addColorStop(1, 'rgba(245, 138, 42, 0)');
+          ctx.fillStyle = s5Glow;
+          ctx.beginPath();
+          ctx.arc(s5LampX, s5LampY, s5GlowR, 0, Math.PI * 2);
+          ctx.fill();
+        } else if (isChestBg) {
+          var cLampX = W * 0.483;
+          var cLampY = H * 0.352;
+          var cPulse = 1 + Math.sin(state.elapsedTime * 8.5) * 0.07;
+          var cGlowR = Math.max(10, 145 * cPulse);
+          var cGlow = ctx.createRadialGradient(cLampX, cLampY, 4, cLampX, cLampY, cGlowR);
+          cGlow.addColorStop(0, 'rgba(255, 194, 88, 0.24)');
+          cGlow.addColorStop(1, 'rgba(245, 138, 42, 0)');
+          ctx.fillStyle = cGlow;
+          ctx.beginPath();
+          ctx.arc(cLampX, cLampY, cGlowR, 0, Math.PI * 2);
+          ctx.fill();
+        } else if (state.activeScene >= 2) {
           var lampX = W * 0.516;
           var lampY = H * 0.495;
           var pulse = 1 + Math.sin(state.elapsedTime * 8.5) * 0.07;
@@ -4210,7 +6089,6 @@
         }
         ctx.restore();
 
-        // Dark vignette over `nencanh2` during Scene 3 Phase 1 ('dialogue')
         if (state.activeScene === 3 && state.scene3Phase === 'dialogue') {
           ctx.save();
           ctx.fillStyle = 'rgba(0, 0, 0, 0.72)';
@@ -4218,48 +6096,63 @@
           ctx.restore();
         }
 
-        var showDialogueLayers =
-          state.activeScene === 1 ||
-          (state.activeScene === 2 && state.scene2Phase !== 'STEP1_MENU') ||
-          (state.activeScene === 3 && state.scene3Phase === 'dialogue');
-
+        var showDialogueLayers = isDialogueOpenNow();
         if (!showDialogueLayers) {
           return;
         }
 
-        // LAYER 2 (Middle): Character portraits
-        var lienDrawable = loadedAssets.sprite_lien_hoodie;
-        if (lienDrawable && state.lienAlpha > 0.01) {
-          var lDim = getDrawableDimensions(lienDrawable, 692, 947);
-          var lH = CONFIG.lienHeight;
-          var lW = lH * (lDim.w / lDim.h);
-          var lX = CONFIG.lienTargetX;
-          var lY = CONFIG.lienTargetY + state.lienOffsetY + Math.sin(state.elapsedTime * 1.8) * 2.5;
+        // STRICT CHARACTER VISIBILITY RULE:
+        // Render ONLY the portrait sprite of the currently speaking character!
+        var activeSpriteId = state.activeLineObj ? state.activeLineObj.spriteId : null;
+        var breath = Math.sin(state.elapsedTime * 1.8) * 2.5;
 
-          ctx.save();
-          ctx.globalAlpha = Math.max(0, Math.min(1, state.lienAlpha));
-          if ('filter' in ctx) {
-            ctx.filter = 'brightness(' + Math.max(0.15, Math.min(1.15, state.lienBrightness)) + ')';
+        if (activeSpriteId === 'sprite_lien_nausong') {
+          var lienNsDrawable = loadedAssets.sprite_lien_nausong;
+          if (lienNsDrawable) {
+            var nsDim = getDrawableDimensions(lienNsDrawable, 349, 953);
+            var nsH = CONFIG.lienNauSongHeight;
+            var nsW = nsH * (nsDim.w / nsDim.h);
+            var nsX = CONFIG.lienNauSongTargetX;
+            var nsY = CONFIG.lienNauSongTargetY + breath;
+            ctx.save();
+            ctx.drawImage(lienNsDrawable, nsX, nsY, nsW, nsH);
+            ctx.restore();
           }
-          ctx.drawImage(lienDrawable, lX, lY, lW, lH);
-          ctx.restore();
-        }
-
-        // STRICT SCENE 1 ONLY: Quản gia Lâm never rendered in Scene 2+
-        if (state.activeScene === 1 && state.quanGiaAlpha > 0.01) {
+        } else if (activeSpriteId === 'sprite_lien_hoodie') {
+          var lienDrawable = loadedAssets.sprite_lien_hoodie;
+          if (lienDrawable) {
+            var lDim = getDrawableDimensions(lienDrawable, 879, 1024);
+            var lH = CONFIG.lienHeight;
+            var lW = lH * (lDim.w / lDim.h);
+            var lX = CONFIG.lienTargetX;
+            var lY = CONFIG.lienTargetY + breath;
+            ctx.save();
+            ctx.drawImage(lienDrawable, lX, lY, lW, lH);
+            ctx.restore();
+          }
+        } else if (activeSpriteId === 'sprite_thiman') {
+          var tmDrawable = loadedAssets.sprite_thiman;
+          if (tmDrawable) {
+            var tmDim = getDrawableDimensions(tmDrawable, 441, 925);
+            var tmH = CONFIG.thiManHeight;
+            var tmW = tmH * (tmDim.w / tmDim.h);
+            var tmX = CONFIG.thiManTargetX;
+            var tmY = CONFIG.thiManTargetY + breath;
+            ctx.save();
+            ctx.translate(tmX + tmW / 2, tmY);
+            ctx.scale(-1, 1);
+            ctx.drawImage(tmDrawable, -tmW / 2, 0, tmW, tmH);
+            ctx.restore();
+          }
+        } else if (activeSpriteId === 'sprite_quan_gia_lam') {
           var qgDrawable = loadedAssets.sprite_quan_gia_lam;
           if (qgDrawable) {
-            var qDim = getDrawableDimensions(qgDrawable, 548, 986);
+            var qDim = getDrawableDimensions(qgDrawable, 991, 1009);
             var qH = CONFIG.quanGiaHeight;
             var qW = qH * (qDim.w / qDim.h);
             var qX = CONFIG.quanGiaTargetX;
-            var qY = CONFIG.quanGiaTargetY + state.quanGiaOffsetY;
-
+            var qY = CONFIG.quanGiaTargetY;
             ctx.save();
-            ctx.globalAlpha = Math.max(0, Math.min(1, state.quanGiaAlpha));
-            if ('filter' in ctx) {
-              ctx.filter = 'brightness(' + Math.max(0.15, Math.min(1.15, state.quanGiaBrightness)) + ')';
-            }
             ctx.translate(qX + qW / 2, qY);
             ctx.scale(-1, 1);
             ctx.drawImage(qgDrawable, -qW / 2, 0, qW, qH);
@@ -4324,9 +6217,28 @@
           dom.imgCollectionNenPopup.src = assetDataUrls.nen_popup;
           dom.imgCollectionNenPopup.hidden = false;
         }
+        if (assetDataUrls.icon_tramcai) {
+          dom.imgHudTramCai.src = assetDataUrls.icon_tramcai;
+          dom.imgRewardTramCai.src = assetDataUrls.icon_tramcai;
+        }
         if (assetDataUrls.huyhieu_biatiensi) {
           dom.imgRewardBadge.src = assetDataUrls.huyhieu_biatiensi;
           dom.imgCollectionBiaTienSi.src = assetDataUrls.huyhieu_biatiensi;
+        }
+        if (assetDataUrls.huyhieu_giahuanca) {
+          dom.imgCollectionGiaHuanCa.src = assetDataUrls.huyhieu_giahuanca;
+        }
+        if (assetDataUrls.huyhieu_phucsac) {
+          dom.imgCollectionPhucSac.src = assetDataUrls.huyhieu_phucsac;
+          dom.imgS5RewPhucSac.src = assetDataUrls.huyhieu_phucsac;
+        }
+        if (assetDataUrls.item_thebai) {
+          dom.imgCollectionTheBai.src = assetDataUrls.item_thebai;
+          dom.imgS5RewTheBai.src = assetDataUrls.item_thebai;
+        }
+        if (assetDataUrls.item_tramngocbich) {
+          dom.imgCollectionTramNgoc.src = assetDataUrls.item_tramngocbich;
+          dom.imgS5RewTramNgoc.src = assetDataUrls.item_tramngocbich;
         }
 
         dom.loading.hidden = true;
